@@ -12,14 +12,16 @@ Prior slug `omni-renewal-engine` is retired as a company name. Product house nam
 
 ## Repo policy (clear)
 
-**Yes — each house gets its own private repo. Not yet.**
+**Yes — each house gets its own private repo. Not yet for the unsplit houses.**
 
-| Layer | Repo | When |
-|-------|------|------|
-| Company desk | `DigitalCurrensy/module-kinetic-ltd` | Live now |
-| House children | `DigitalCurrensy/{bayline,loadclear,wellpath,tenderbank,ionlattice,unitcommit,cabinetfield,fiberlock,coilhold,phasepin,nitroforge,photonseal,phononstack,densitywell}` | After that house has a compiling first slice |
+| Layer | Repo | SHA |
+|-------|------|-----|
+| Company desk | `DigitalCurrensy/module-kinetic-ltd` | parent |
+| Bayline | `DigitalCurrensy/bayline` | `2aa5c59` |
+| Loadclear | `DigitalCurrensy/loadclear` | `8a6dcf1` |
+| Unitcommit | `DigitalCurrensy/unitcommit` | `d0ea81c` (8/8) |
 
-Copy `platforms/{slug}/` one-to-one into the child. Do not delete this parent. Do not merge houses. Do not stand up fourteen empty shells.
+Copy `platforms/{slug}/` one-to-one into the child after a compiling first slice AND an explicit split call. Do not delete this parent. Do not merge houses. Do not stand up fourteen empty shells. Next child when called: Cabinetfield.
 
 ## Houses
 
