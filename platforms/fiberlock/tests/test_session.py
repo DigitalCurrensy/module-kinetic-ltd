@@ -2,8 +2,9 @@ from platforms.fiberlock.src.application.session import WrapRefused, wrap_contro
 
 
 class _Pin:
-    def __init__(self, time_source):
+    def __init__(self, time_source, grade=None):
         self.time_source = time_source
+        self.grade = grade
 
 
 def test_wrap_under_qber():
@@ -27,6 +28,14 @@ def test_wrap_from_csac_pin():
 def test_refuse_gps_peer_pin():
     try:
         wrap_from_pin("span-4", "ks-4", 0.04, 256, _Pin("gps_peer"))
+        assert False
+    except WrapRefused:
+        pass
+
+
+def test_refuse_too_wide_grade():
+    try:
+        wrap_from_pin("span-4", "ks-5", 0.04, 256, _Pin("csac", "too_wide"))
         assert False
     except WrapRefused:
         pass

@@ -1,6 +1,7 @@
 """Fiberlock — CV-QKD wrap on spans that carry Unitcommit setpoints.
 
 Not a plant sensor. Operator object is a key session and a QBER tape.
+Duck-typed pin: TimePin or PinQuality. No Phasepin import.
 """
 from __future__ import annotations
 
@@ -36,6 +37,9 @@ def wrap_control_path(span_id: str, session_id: str, qber: float, key_bits: int)
 
 
 def wrap_from_pin(span_id: str, session_id: str, qber: float, key_bits: int, pin) -> KeySession:
-    if getattr(pin, "time_source", None) == "gps_peer":
+    if getattr(pin, "grade", None) == "too_wide":
+        raise WrapRefused("Fiberlock will not wrap a too_wide path inaccuracy")
+    inner = getattr(pin, "pin", pin)
+    if getattr(inner, "time_source", None) == "gps_peer":
         raise WrapRefused("Fiberlock will not wrap on a gps_peer pin")
     return wrap_control_path(span_id, session_id, qber, key_bits)
