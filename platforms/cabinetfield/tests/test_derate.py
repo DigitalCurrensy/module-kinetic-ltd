@@ -35,23 +35,21 @@ def test_warning_without_cal_is_legal():
 
 def test_critical_expired_cal_refuses():
     obs = Observation(
-        "cab-7", "cluster-a", "2026-09-13T01:00:00Z", 2885.0, 2855.0, 68.0, "winding_hotspot", "critical"
+        "cab-7", "cluster-a", "2026-10-02T00:00:00Z", 2885.0, 2855.0, 68.0, "winding_hotspot", "critical"
     )
-    expired = CalibrationRun("cal-old", "cab-7", "2026-07-01T00:00:00Z", "2026-08-01T00:00:00Z")
     try:
-        issue_derate(obs, expired)
+        issue_derate(obs, _cal())
         assert False
     except CalibrationRequired:
         pass
 
 
-def test_critical_wrong_cabinet_refuses():
+def test_critical_wrong_cabinet_cal_refuses():
     obs = Observation(
-        "cab-7", "cluster-a", "2026-09-13T01:00:00Z", 2885.0, 2855.0, 68.0, "winding_hotspot", "critical"
+        "cab-9", "cluster-a", "2026-09-13T01:00:00Z", 2885.0, 2855.0, 68.0, "pd_burst", "critical"
     )
-    other = CalibrationRun("cal-8", "cab-8", "2026-09-01T00:00:00Z", "2026-10-01T00:00:00Z")
     try:
-        issue_derate(obs, other)
+        issue_derate(obs, _cal())
         assert False
     except CalibrationRequired:
         pass
