@@ -3,12 +3,12 @@
 Loop rule: rewrite this file when a parent SHA lands. Code is law. Docs lag is dirt.
 
 - Company: Module Kinetic Ltd
-- Parent: DigitalCurrensy/module-kinetic-ltd main `e04c271`
+- Parent: DigitalCurrensy/module-kinetic-ltd main `b4590c7`
 - Retired slug: omni-renewal-engine (redirect only; do not build there)
 - Brand: Deep Slate #121316, Grid Amber #FFB000, Phosphor Green #00FF66, Off-White #F4F4F6
 - Slogan (not the company name): THE GRID IS BROKEN. WE ARE THE RENEWAL ENGINE.
-- Live children: DigitalCurrensy/bayline `2aa5c59`, DigitalCurrensy/loadclear `8a6dcf1`
-- Unitcommit child: NOT CREATED. Compiling unit complete on parent. GitHub create_repository for DigitalCurrensy/unitcommit 404 (user account, not org) + tool lock. Retry without organization.
+- Live children: DigitalCurrensy/bayline `2aa5c59`, DigitalCurrensy/loadclear `8a6dcf1`, DigitalCurrensy/unitcommit `d0ea81c`
+- Unitcommit child compiling unit 8/8. build_ising.py blob `55a20615` MATCH. Parent `platforms/unitcommit/` remains source of truth.
 - Parent `platforms/{house}` is source of truth. Houses do not merge. No empty shells.
 - Build sequence: Bayline receipt → Loadclear enroll/refuse/cluster → Unitcommit clearance → Cabinetfield derate → Phasepin + Fiberlock → Photonseal HMAC.
 - Product 6 is Unitcommit (not Unitspin).
