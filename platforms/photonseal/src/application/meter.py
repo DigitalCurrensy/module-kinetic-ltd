@@ -1,6 +1,6 @@
 """Photonseal — attested interval as a signed meter, not a token.
 
-Duck-typed bind to a Unitcommit run: status must be cleared.
+Duck-typed bind: cleared AND wrapped AND sealable clock.
 No Unitcommit import. Houses do not merge.
 """
 from __future__ import annotations
@@ -63,6 +63,8 @@ def seal_from_run(
 ) -> SignedInterval:
     if getattr(run, "status", None) != "cleared":
         raise SealRefused("Photonseal will not seal an uncleared commitment run")
+    if not getattr(run, "wrapped", False):
+        raise SealRefused("Photonseal will not seal an unwrapped control path")
     return seal_interval(
         meter_id=meter_id,
         interval_start=interval_start,
