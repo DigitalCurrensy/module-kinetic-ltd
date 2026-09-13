@@ -1,6 +1,6 @@
 # Heavy wave — Module Kinetic Ltd
 
-Parent `4a42ce7`. Live children: bayline `2aa5c59`, loadclear `8a6dcf1`.
+Parent `e04c271`. Live children: bayline `2aa5c59`, loadclear `8a6dcf1`, unitcommit `d0ea81c`.
 Parent platforms/ is source of truth. Houses do not merge.
 
 ```
@@ -16,5 +16,5 @@ Bayline receipt (OCPP 2.1 NotifyEvent)
          verify: _mac + compare_digest (empty/wrong key → False)
 ```
 
-Unitcommit child is not split until called. Compiling unit on parent is complete.
+Unitcommit child is split at d0ea81c (8/8 blob match). Next child when called: Cabinetfield.
 Ed25519 is not shipped. HMAC remains the meter tag.
