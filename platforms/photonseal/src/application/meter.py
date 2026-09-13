@@ -1,7 +1,8 @@
 """Photonseal — attested interval as a signed meter, not a token.
 
 Duck-typed bind: cleared AND wrapped AND sealable clock.
-No Unitcommit import. Houses do not merge.
+HMAC-SHA256 over meter_id|start|interval|Wh|time_source.
+Empty signing_key is refused. No Unitcommit import.
 """
 from __future__ import annotations
 
@@ -40,6 +41,8 @@ def seal_interval(
 ) -> SignedInterval:
     if time_source not in SEALABLE:
         raise SealRefused("Photonseal will not seal an interval pinned only by gps_peer")
+    if not signing_key:
+        raise SealRefused("signing key missing")
     material = f"{meter_id}|{interval_start}|{interval_s}|{watt_hours:.3f}|{time_source}".encode()
     signature = hmac.new(signing_key.encode(), material, hashlib.sha256).hexdigest()
     return SignedInterval(
