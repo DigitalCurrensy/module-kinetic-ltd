@@ -31,3 +31,27 @@ def test_warning_without_cal_is_legal():
     derate = issue_derate(obs, None)
     assert derate.factor == 0.85
     assert derate.calibration_run_id is None
+
+
+def test_critical_expired_cal_refuses():
+    obs = Observation(
+        "cab-7", "cluster-a", "2026-09-13T01:00:00Z", 2885.0, 2855.0, 68.0, "winding_hotspot", "critical"
+    )
+    expired = CalibrationRun("cal-old", "cab-7", "2026-07-01T00:00:00Z", "2026-08-01T00:00:00Z")
+    try:
+        issue_derate(obs, expired)
+        assert False
+    except CalibrationRequired:
+        pass
+
+
+def test_critical_wrong_cabinet_refuses():
+    obs = Observation(
+        "cab-7", "cluster-a", "2026-09-13T01:00:00Z", 2885.0, 2855.0, 68.0, "winding_hotspot", "critical"
+    )
+    other = CalibrationRun("cal-8", "cab-8", "2026-09-01T00:00:00Z", "2026-10-01T00:00:00Z")
+    try:
+        issue_derate(obs, other)
+        assert False
+    except CalibrationRequired:
+        pass
