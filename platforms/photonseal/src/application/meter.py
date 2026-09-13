@@ -2,7 +2,7 @@
 
 Duck-typed bind: cleared AND wrapped AND sealable clock.
 HMAC-SHA256 over meter_id|start|interval|Wh|time_source.
-Empty signing_key is refused. No Unitcommit import.
+Empty signing_key is refused. No Unitcommit / Phasepin import.
 """
 from __future__ import annotations
 
@@ -55,6 +55,18 @@ def seal_interval(
     )
 
 
+def verify_interval(interval: SignedInterval, signing_key: str) -> bool:
+    expected = seal_interval(
+        meter_id=interval.meter_id,
+        interval_start=interval.interval_start,
+        interval_s=interval.interval_s,
+        watt_hours=interval.watt_hours,
+        time_source=interval.time_source,
+        signing_key=signing_key,
+    )
+    return hmac.compare_digest(interval.signature, expected.signature)
+
+
 def seal_from_run(
     *,
     run,
@@ -68,6 +80,8 @@ def seal_from_run(
         raise SealRefused("Photonseal will not seal an uncleared commitment run")
     if not getattr(run, "wrapped", False):
         raise SealRefused("Photonseal will not seal an unwrapped control path")
+    if getattr(run, "grade", None) == "too_wide":
+        raise SealRefused("Photonseal will not seal a too_wide path inaccuracy")
     return seal_interval(
         meter_id=meter_id,
         interval_start=interval_start,
