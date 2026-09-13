@@ -33,3 +33,9 @@ def wrap_control_path(span_id: str, session_id: str, qber: float, key_bits: int)
     if key_bits < MIN_KEY_BITS:
         raise WrapRefused("key material too short to wrap a setpoint")
     return KeySession(span_id, session_id, qber, key_bits, wrapped=True)
+
+
+def wrap_from_pin(span_id: str, session_id: str, qber: float, key_bits: int, pin) -> KeySession:
+    if getattr(pin, "time_source", None) == "gps_peer":
+        raise WrapRefused("Fiberlock will not wrap on a gps_peer pin")
+    return wrap_control_path(span_id, session_id, qber, key_bits)
