@@ -11,7 +11,7 @@ def test_seal_csac_interval():
         signing_key="k",
     )
     assert interval.kind == "signed_meter"
-    assert interval.signature.startswith("0x")
+    assert len(interval.signature) == 64
 
 
 def test_refuse_gps_peer():

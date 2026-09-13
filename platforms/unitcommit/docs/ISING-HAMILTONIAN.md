@@ -1,6 +1,6 @@
-# Module Kinetic Ltd — Unitcommit Hamiltonian construction
+# Unitcommit Hamiltonian construction
 
-Not a recap. This is the construction the solver implements.
+Code law. Live builder: `platforms/unitcommit/src/application/build_ising.py`.
 
 ## 0. What is allowed on the quantum device
 
@@ -8,16 +8,16 @@ Only clustered binaries.
 
 - `u[k,t] ∈ {0,1}` cluster `k` committed in interval `t`
 - `v[k,t] ∈ {0,1}` cluster `k` starts in interval `t`
-- spin `σ[k,t] = 2 u[k,t] − 1`
-- QUBO bit `x = (1 − σ) / 2`
+- `σ = 2u − 1` so `σ = +1` means ON
+- `x = u = (σ + 1) / 2`
 
-Continuous `p, q, V` stay on ADMM + AC-OPF. Raw DER inverters are members of `vpp_clusters`, never individual spins.
+Continuous `p, q, V` stay on ADMM + AC-OPF. Raw DER inverters are members of a cluster, never individual spins.
 
-## 1. Indexing
+## 1. Indexing (live)
 
 ```
-T = horizon_minutes / interval_minutes
-K = len(vpp_clusters)
+T = len(demand_mw)
+K = len(clusters)
 n_u = K * T
 n_v = K * T
 n   = n_u + n_v
@@ -26,95 +26,69 @@ u_index(k, t) = k*T + t
 v_index(k, t) = n_u + k*T + t
 ```
 
-Store this on `ising_jobs.index_spec` jsonb:
-`{T, K, n_u, n_v, n}`
+Clearance requires `assignment_count == n` and `opf.spin_count == n`.
 
-After anneal, persist one `spin_assignments` row per spin:
-`(spin_index, cluster_id, time_step, sigma, committed)`.
-Count must equal `ising_jobs.spin_count`.
-
-## 2. Classical cost that becomes linear QUBO
+## 2. Classical cost — linear QUBO, not scaled by derate `f`
 
 ```
-min Σ_{k,t}  C_nl[k] * u[k,t]  +  C_su[k] * v[k,t]
+q[u_{k,t}] += C_nl[k]
+q[v_{k,t}] += C_su[k]
 ```
 
-Marginal energy cost is applied in the dispatch slave, not here.
+## 3. Hard logic as quadratic penalties (live defaults)
 
-## 3. Hard logic as quadratic penalties
+`λ_logic = 50`, `λ_mut = 40`, `λ_R = 20`, `λ_D = 8`, `α = 0.4`, `normalize = per_unit`.
 
-Startup definition (`λ_logic`, default 5000).
-`t = 0` uses `u[k,-1] = initial_on[k]`.
-
-```
-v[k,t] >= u[k,t] − u[k,t-1]
-v[k,t] <= u[k,t]
-v[k,t] <= 1 − u[k,t-1]
-```
-
-QUBO:
+Startup identity, `t = 0` uses `u[k,-1] = initial_on[k]`:
 
 ```
-v (1 − u)              # v <= u
-v * u_prev             # v <= 1 − u_prev
-(u − u_prev − v)^2     # v >= Δu
+(u − u_prev − v)^2     plus v(1 − u) and the complementary bound
 ```
 
-Minimum up (`λ_mut`, default 4000):
+Minimum up:
 
 ```
-for k' in 1 .. MUT[k]-1:
-    v[k,t] * (1 − u[k, t+k'])
+for τ in 1 .. MUT[k]-1:
+    λ_mut * v[k,t] * (1 − u[k, t+τ])
 ```
 
-Reserve (`λ_R`, default 20):
+Reserve and demand hint after per-unit scale `s = max Pmax` (recomputed AFTER Cabinetfield shrink):
 
 ```
-(Σ_k (Pmax[k]−Pmin[k]) u[k,t]  −  R[t])^2
+ĉ_k = Pmax_k / s
+p̂_k = Pmin_k / s
+R̂_t = R_t / s
+D̂_t = α D_t / s
+
+q[u_{k,t}] += λ_R (ĉ_k² − 2 ĉ_k R̂_t) + λ_D (p̂_k² − 2 p̂_k D̂_t)
+Q[u_i,t ; u_j,t] += 2 λ_R ĉ_i ĉ_j + 2 λ_D p̂_i p̂_j
 ```
 
-Minimum online capacity hint (`λ_D`, default 8, `α = 0.4`):
+True power balance is the OPF slave. Corridor gates are not in the live builder.
+
+## 4. QUBO → Ising (live `build_ising`)
 
 ```
-(Σ_k Pmin[k] u[k,t]  −  α D[t])^2
+E(x) = q·x + Σ_{i<j} Q_ij x_i x_j
+x = (σ + 1) / 2
+
+h_i  += q_i / 2
+for each Q_ij:
+    h_i += Q_ij / 4
+    h_j += Q_ij / 4
+    J_ij = Q_ij / 4
 ```
 
-True power balance is the OPF slave.
-Corridor gates (`λ_line`) are optional PTDF squares on critical branches.
-
-## 4. QUBO → Ising
-
-```
-E(x) = x^T Q x + q^T x          x ∈ {0,1}^n
-x_i = (1 − σ_i) / 2
-H(σ) = const + Σ_i h_i σ_i + Σ_{i<j} J_ij σ_i σ_j
-```
-
-Conversion used in code:
-
-```
-h_i  += −0.5 q_i
-for each Qs_ij:
-    h_i  += −0.25 Qs_ij
-    h_j  += −0.25 Qs_ij
-    J_ij +=  0.25 Qs_ij     (i ≠ j)
-```
-
-`Qs = (Q + Q^T)/2`. Constant term dropped (does not change argmin).
-
-Storage: `h_json` + `j_coo_json` if `n < 2000`, else object keys under `r2://module-kinetic/{tenant}/unitcommit/ising/`.
+Do not use `x = (1 − σ)/2` or negative half-q increments. Those signs are retired.
 
 ## 5. Worked example — 2 clusters × 2 intervals
 
 | cluster | Pmin | Pmax | Cnl | Csu | MUT | initial_on |
 |---------|------|------|-----|-----|-----|------------|
-| 0 thermal-like | 20 | 80 | 400 | 1200 | 2 | 1 |
-| 1 BESS aggregate | 0 | 25 | 10 | 5 | 1 | 0 |
+| 0 | 20 | 80 | 400 | 1200 | 2 | 1 |
+| 1 | 0 | 25 | 10 | 5 | 1 | 0 |
 
-Demand `[60, 70]` MW. Reserve `[5, 5]` MW.
-`λ_logic=5000`, `λ_mut=4000`, `λ_R=20`, `λ_D=8`, `α=0.4`.
-
-Index map:
+Demand `[60, 70]` MW. Reserve `[5, 5]` MW. Live λ, not 5000/4000.
 
 ```
 u[0,0]=0  u[0,1]=1  u[1,0]=2  u[1,1]=3
@@ -122,21 +96,12 @@ v[0,0]=4  v[0,1]=5  v[1,0]=6  v[1,1]=7
 n = 8
 ```
 
-A feasible bitstring (stay on cluster 0, start cluster 1 at t=1):
-
-```
-x = [1, 1, 0, 1, 0, 0, 0, 1]
-```
-
-Clearance after anneal still requires an `opf_solutions` row whose `residual_mw` is inside `commitment_runs.tolerance_mw`, and `count(spin_assignments) == ising_jobs.spin_count`. Without both, status cannot become `cleared`.
+Clearance after anneal still requires `residual_mw ≤ tolerance_mw` and spin width `n`.
 
 ## 6. Handoff
 
 ```
-build_ising(zone_snapshot) → IsingProblem
-solve_commitment(...)      → CommitmentVector
-admm_dispatch(...)         → Setpoints
-publish_setpoints          → OutboxEvent
+clusters_from_flex(flex, derates) → tuple[Cluster]
+build_ising(zone_snapshot)        → IsingProblem
+build_and_clear(...)              → CommitmentRun {cleared|refused}
 ```
-
-`<500 ms` is the budget for the clustered problem, not millions of raw DERs.

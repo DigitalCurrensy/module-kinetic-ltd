@@ -1,6 +1,8 @@
 """Photonseal — attested interval as a signed meter, not a token."""
 from __future__ import annotations
 
+import hashlib
+import hmac
 from dataclasses import dataclass
 from typing import Literal
 
@@ -34,12 +36,13 @@ def seal_interval(
 ) -> SignedInterval:
     if time_source not in SEALABLE:
         raise SealRefused("Photonseal will not seal an interval pinned only by gps_peer")
-    material = f"{meter_id}|{interval_start}|{interval_s}|{watt_hours:.3f}|{time_source}|{signing_key}"
+    material = f"{meter_id}|{interval_start}|{interval_s}|{watt_hours:.3f}|{time_source}".encode()
+    signature = hmac.new(signing_key.encode(), material, hashlib.sha256).hexdigest()
     return SignedInterval(
         meter_id=meter_id,
         interval_start=interval_start,
         interval_s=interval_s,
         watt_hours=watt_hours,
         time_source=time_source,
-        signature=hex(abs(hash(material))),
+        signature=signature,
     )

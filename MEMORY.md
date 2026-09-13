@@ -1,12 +1,13 @@
 # MEMORY — Module Kinetic Ltd
 
 - Company: Module Kinetic Ltd
-- Parent repo: DigitalCurrensy/module-kinetic-ltd
-- Retired company slug: omni-renewal-engine (keep as redirect note only)
+- Parent repo: DigitalCurrensy/module-kinetic-ltd main `52a4bf8`
+- Retired company slug: omni-renewal-engine (do not build there)
 - Brand tokens: Deep Slate #121316, Grid Amber #FFB000, Phosphor Green #00FF66, Off-White #F4F4F6
 - Slogan: THE GRID IS BROKEN. WE ARE THE RENEWAL ENGINE.
-- Edge-native rule: 90% of telemetry, fault diagnosis, and dispatch inference on the box. Cloud owns identity, parts, registry, settlement.
-- Repo policy: parent + 14 private children later. Houses do not merge. No empty child shells before a compiling slice.
-- Build sequence locked: Bayline receipt → Loadclear refuse → Unitcommit clearance gates → Cabinetfield derate → Phasepin/Fiberlock → Photonseal.
-- Unitcommit honesty: clustered spins only. Continuous MW via ADMM/AC-OPF. MILP fallback always present.
-- Cabinetfield honesty: NV ODMR vs that cabinet's baseline. critical illegal without calibration_run covering observed_at.
+- Live children: DigitalCurrensy/bayline, DigitalCurrensy/loadclear
+- Parent `platforms/{house}` remains source of truth. Houses do not merge. No empty child shells.
+- Build sequence locked: Bayline receipt → Loadclear refuse → Unitcommit clearance → Cabinetfield derate → Phasepin/Fiberlock → Photonseal.
+- Product 6 display name is Unitcommit (not Unitspin).
+- Code law: σ = 2u − 1, x = (σ + 1) / 2, σ = +1 means ON. λ_logic=50, λ_mut=40.
+- Fiberlock: QBER_MAX=0.11 is a DV abort analog; CV field metric is excess noise ξ. Tape on parent qber.py.

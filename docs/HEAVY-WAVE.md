@@ -1,15 +1,16 @@
-# Heavy wave chunk — Module Kinetic Ltd
+# Heavy wave — Module Kinetic Ltd
 
-Shipped on parent. No new child repos in this wave except finishing Bayline.
+Parent `52a4bf8`. Live children: `DigitalCurrensy/bayline`, `DigitalCurrensy/loadclear`.
+Parent `platforms/` remains source of truth. Houses do not merge.
 
 ```
-Bayline receipt
-    → Loadclear enroll + refuse + cluster (blocked assets add 0 MW)
+Bayline receipt (child 2aa5c59)
+    → Loadclear enroll + refuse + cluster (child 8a6dcf1)
     → Cabinetfield derate factor on that cluster
-    → Unitcommit build_ising + clearance (residual AND spin_count)
+    → Unitcommit clusters_from_flex + build_ising + clearance
     → Phasepin stamps the run (CSAC/PTP/holdover; GPS is peer)
-    → Fiberlock wraps the setpoint span when QBER allows
+    → Fiberlock tape then wrap when QBER / ξ allow
     → Photonseal seals the interval as a signed meter
 ```
 
-Houses do not merge. Cross-house objects are duck-typed refs.
+Unitcommit child is not split until called. Compiling unit on parent is complete.
