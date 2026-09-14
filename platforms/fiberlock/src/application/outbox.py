@@ -1,7 +1,7 @@
 """Fiberlock wrap outbox — persist a wrapped session, do not mutate it.
 
 Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-An unwrapped session is not a row. Module Kinetic Ltd.
+An unwrapped path is not an outbox row. Module Kinetic Ltd.
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ class DuplicateOutboxEvent(OutboxError):
 
 
 class UnwrappedSession(OutboxError):
-    code = "unwrapped_session"
+    code = "unwrapped"
 
 
 @dataclass(frozen=True)
