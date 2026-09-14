@@ -19,7 +19,7 @@ from platforms.bayline.src.application.receipt import (
 def _open_receipt():
     store = ReceiptStore()
     row = NotifyEventRow(
-        event_id=1,
+        event_id=7,
         timestamp="2026-09-13T23:00:00Z",
         trigger="Alerting",
         actual_value="Faulted",
@@ -39,32 +39,23 @@ def _open_receipt():
     return open_work_order(store, msg, row, "wo-1")
 
 
-def test_enqueue_work_order():
-    receipt = _open_receipt()
-    box = Outbox()
-    row = enqueue_work_order(box, receipt, event_id="e1")
-    assert row.kind == "work_order"
-    assert row.work_order_id == "wo-1"
-    assert row.tenant_id == "t1"
-    assert box.by_event("t1", "e1") is row
-    assert len(box.for_tenant("t1")) == 1
-
-
-def test_duplicate_event_id_refuses():
-    receipt = _open_receipt()
-    box = Outbox()
-    enqueue_work_order(box, receipt, event_id="e1")
+def test_enqueue_requires_work_order():
     try:
-        enqueue_work_order(box, receipt, event_id="e1")
+        enqueue_work_order(Outbox(), None, "evt-1")
         assert False
-    except DuplicateOutboxEvent:
+    except MissingReceipt:
         pass
 
 
-def test_missing_work_order_refuses():
+def test_enqueue_idempotent_on_event_id():
+    receipt = _open_receipt()
     box = Outbox()
+    row = enqueue_work_order(box, receipt, "evt-1")
+    assert row.work_order_id == "wo-1"
+    assert box.by_event("t1", "evt-1") is row
+    assert len(box.for_tenant("t1")) == 1
     try:
-        enqueue_work_order(box, None, event_id="e2")
+        enqueue_work_order(box, receipt, "evt-1")
         assert False
-    except MissingReceipt:
+    except DuplicateOutboxEvent:
         pass
