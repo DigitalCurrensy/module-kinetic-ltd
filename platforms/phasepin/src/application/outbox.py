@@ -1,7 +1,7 @@
-"""Phasepin time-pin outbox — persist a pin, do not mutate it.
+"""Phasepin outbox — persist a pin, do not mutate it.
 
 Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-A missing pin is not a row. GPS peer is still a pin. Module Kinetic Ltd.
+A gps_peer pin is not an outbox row. Module Kinetic Ltd.
 """
 from __future__ import annotations
 
@@ -23,6 +23,10 @@ class MissingPin(OutboxError):
     code = "missing_pin"
 
 
+class GpsPeerRefused(OutboxError):
+    code = "gps_peer"
+
+
 @dataclass(frozen=True)
 class OutboxRow:
     tenant_id: str
@@ -31,7 +35,6 @@ class OutboxRow:
     time_source: str
     offset_ns: int
     holdover_s: int
-    grade: str | None
     kind: Kind = "time_pin"
 
 
@@ -59,8 +62,10 @@ class Outbox:
 
 
 def enqueue_pin(outbox: Outbox, pin, *, tenant_id: str, event_id: str) -> OutboxRow:
-    if pin is None or not getattr(pin, "time_source", None):
-        raise MissingPin("outbox will not enqueue a missing time pin")
+    if pin is None or getattr(pin, "time_source", None) is None:
+        raise MissingPin("outbox will not enqueue a missing pin")
+    if pin.time_source == "gps_peer":
+        raise GpsPeerRefused("outbox will not enqueue a gps_peer pin")
     row = OutboxRow(
         tenant_id=tenant_id,
         event_id=event_id,
@@ -68,6 +73,5 @@ def enqueue_pin(outbox: Outbox, pin, *, tenant_id: str, event_id: str) -> Outbox
         time_source=pin.time_source,
         offset_ns=pin.offset_ns,
         holdover_s=pin.holdover_s,
-        grade=getattr(pin, "grade", None),
     )
     return outbox.append(row)
