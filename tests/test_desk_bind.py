@@ -1,8 +1,9 @@
-"""Desk bind — seven kernels, one run, no house merge.
+"""Desk bind — seven kernels + seven outboxes, one run, no house merge.
 
 Bayline receipt → Loadclear enroll/cluster → Cabinetfield derate
 → Unitcommit build+clear → Phasepin pin → Fiberlock wrap → Photonseal HMAC.
 """
+from platforms.bayline.src.application.outbox import Outbox as BaylineOutbox, enqueue_work_order
 from platforms.bayline.src.application.receipt import (
     Component,
     IncomingMessage,
@@ -14,6 +15,8 @@ from platforms.bayline.src.application.receipt import (
     set_lockout,
 )
 from platforms.cabinetfield.src.application.derate import Observation, issue_derate
+from platforms.cabinetfield.src.application.outbox import Outbox as CabinetOutbox, enqueue_derate
+from platforms.fiberlock.src.application.outbox import Outbox as FiberOutbox, enqueue_wrap
 from platforms.fiberlock.src.application.session import wrap_from_pin
 from platforms.loadclear.src.application.cluster import clusters_from_enrollments
 from platforms.loadclear.src.application.enroll import (
@@ -21,12 +24,16 @@ from platforms.loadclear.src.application.enroll import (
     close_fault,
     enroll_from_bayline,
 )
+from platforms.loadclear.src.application.outbox import Outbox as LoadclearOutbox, enqueue_enrollment
 from platforms.phasepin.src.application.clock import pin_time
 from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy
+from platforms.phasepin.src.application.outbox import Outbox as PhaseOutbox, enqueue_pin
 from platforms.photonseal.src.application.meter import seal_from_run, verify_interval
+from platforms.photonseal.src.application.outbox import Outbox as SealOutbox, enqueue_interval
 from platforms.unitcommit.src.application.build_ising import OpfSolution, ZoneSnapshot
 from platforms.unitcommit.src.application.clearance import build_and_clear
 from platforms.unitcommit.src.application.from_clusters import clusters_from_flex
+from platforms.unitcommit.src.application.outbox import Outbox as UnitOutbox, enqueue_cleared_run
 
 
 def test_desk_bind_cleared_wrapped_sealed():
@@ -52,6 +59,8 @@ def test_desk_bind_cleared_wrapped_sealed():
     set_lockout(receipts, "t1", "corr-1")
     receipt = open_work_order(receipts, msg, row, "wo-1")
     assert receipt.work_order_id == "wo-1"
+    wo = enqueue_work_order(BaylineOutbox(), receipt, "evt-wo")
+    assert wo.work_order_id == "wo-1"
 
     enrollments = EnrollStore()
     enrollment = enroll_from_bayline(
@@ -63,6 +72,8 @@ def test_desk_bind_cleared_wrapped_sealed():
         lockout_open=True,
     )
     close_fault(enrollments, "t1", "1")
+    enq = enqueue_enrollment(LoadclearOutbox(), enrollment, "evt-en")
+    assert enq.bayline_work_order_id == "wo-1"
     flex = clusters_from_enrollments(
         "cluster-a",
         [enrollment],
@@ -83,6 +94,8 @@ def test_desk_bind_cleared_wrapped_sealed():
     )
     derate = issue_derate(obs, None)
     assert derate.factor == 0.85
+    dr = enqueue_derate(CabinetOutbox(), derate, tenant_id="t1", event_id="evt-dr")
+    assert dr.factor == 0.85
 
     uc_clusters = clusters_from_flex((flex,), (derate,))
     assert uc_clusters[0].pmax_mw == 0.02 * 0.85
@@ -103,9 +116,13 @@ def test_desk_bind_cleared_wrapped_sealed():
     )
     quality = attach_inaccuracy(pin, 400)
     assert quality.grade == "profile_in_spec"
+    pp = enqueue_pin(PhaseOutbox(), pin, tenant_id="t1", event_id="evt-pin")
+    assert pp.time_source == "csac"
 
     session = wrap_from_pin("span-4", "ks-1", 0.04, 256, quality)
     assert session.wrapped is True
+    wr = enqueue_wrap(FiberOutbox(), session, tenant_id="t1", event_id="evt-wr")
+    assert wr.span_id == "span-4"
 
     run = build_and_clear(
         run_id="run-1",
@@ -117,6 +134,8 @@ def test_desk_bind_cleared_wrapped_sealed():
         wrapped=session.wrapped,
     )
     assert run.status == "cleared"
+    cr = enqueue_cleared_run(UnitOutbox(), run, tenant_id="t1", event_id="evt-uc")
+    assert cr.run_id == "run-1"
 
     class _SealRun:
         status = run.status
@@ -135,3 +154,5 @@ def test_desk_bind_cleared_wrapped_sealed():
     assert interval.kind == "signed_meter"
     assert verify_interval(interval, "k") is True
     assert verify_interval(interval, "") is False
+    sm = enqueue_interval(SealOutbox(), interval, tenant_id="t1", event_id="evt-sm")
+    assert sm.signature == interval.signature
