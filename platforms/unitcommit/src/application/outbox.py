@@ -1,14 +1,14 @@
-"""Unitcommit clearance outbox — persist a cleared run, do not mutate it.
+"""Unitcommit run outbox — persist a cleared run, do not mutate it.
 
 Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-A refused run is not a settlement row. Module Kinetic Ltd.
+A refused run is not an outbox row. Module Kinetic Ltd.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Literal
 
-Kind = Literal["clearance"]
+Kind = Literal["commitment_run"]
 
 
 class OutboxError(Exception):
@@ -32,7 +32,7 @@ class OutboxRow:
     spin_count: int
     assignment_count: int
     residual_mw: float
-    kind: Kind = "clearance"
+    kind: Kind = "commitment_run"
 
 
 @dataclass
@@ -58,9 +58,9 @@ class Outbox:
         return tuple(r for r in self.rows if r.tenant_id == tenant_id)
 
 
-def enqueue_clearance(outbox: Outbox, run, tenant_id: str, event_id: str) -> OutboxRow:
+def enqueue_cleared_run(outbox: Outbox, run, *, tenant_id: str, event_id: str) -> OutboxRow:
     if run is None or getattr(run, "status", None) != "cleared":
-        raise UnclearedRun("outbox will not enqueue an uncleared commitment run")
+        raise UnclearedRun("outbox will not enqueue a run that is not cleared")
     row = OutboxRow(
         tenant_id=tenant_id,
         event_id=event_id,
