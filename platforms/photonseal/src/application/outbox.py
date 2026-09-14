@@ -1,8 +1,7 @@
-"""Photonseal meter outbox — persist a signed interval, do not mutate it.
+"""Photonseal outbox — persist a signed meter interval, do not mutate it.
 
 Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-An unsigned interval is not a row. Signing key is never stored.
-HMAC stays the tag. Module Kinetic Ltd.
+The signing key is never stored. Module Kinetic Ltd.
 """
 from __future__ import annotations
 
@@ -20,8 +19,8 @@ class DuplicateOutboxEvent(OutboxError):
     code = "duplicate_outbox_event"
 
 
-class UnsignedInterval(OutboxError):
-    code = "unsigned_interval"
+class MissingInterval(OutboxError):
+    code = "missing_interval"
 
 
 @dataclass(frozen=True)
@@ -62,9 +61,7 @@ class Outbox:
 
 def enqueue_interval(outbox: Outbox, interval, *, tenant_id: str, event_id: str) -> OutboxRow:
     if interval is None or not getattr(interval, "signature", None):
-        raise UnsignedInterval("outbox will not enqueue an unsigned interval")
-    if getattr(interval, "kind", None) != "signed_meter":
-        raise UnsignedInterval("outbox will not enqueue a token")
+        raise MissingInterval("outbox will not enqueue an unsigned interval")
     row = OutboxRow(
         tenant_id=tenant_id,
         event_id=event_id,
