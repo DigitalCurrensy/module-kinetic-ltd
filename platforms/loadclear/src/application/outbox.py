@@ -1,4 +1,4 @@
-"""Loadclear enroll outbox — persist the enrollment, do not mutate it.
+"""Loadclear enrollment outbox — persist the enroll, do not mutate it.
 
 Append-only. Idempotent on event_id. No DROP / TRUNCATE.
 In-memory first; Timescale later. Module Kinetic Ltd.
@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal
 
-Kind = Literal["enroll"]
+Kind = Literal["enrollment"]
 
 
 class OutboxError(Exception):
@@ -31,7 +31,7 @@ class OutboxRow:
     evse_id: str
     station_id: str
     bayline_work_order_id: str
-    kind: Kind = "enroll"
+    kind: Kind = "enrollment"
 
 
 @dataclass
@@ -57,7 +57,7 @@ class Outbox:
         return tuple(r for r in self.rows if r.tenant_id == tenant_id)
 
 
-def enqueue_enroll(outbox: Outbox, enrollment, event_id: str) -> OutboxRow:
+def enqueue_enrollment(outbox: Outbox, enrollment, event_id: str) -> OutboxRow:
     if enrollment is None or not getattr(enrollment, "bayline_work_order_id", None):
         raise MissingEnrollment("outbox will not enqueue an enrollment without a Bayline work order")
     row = OutboxRow(
