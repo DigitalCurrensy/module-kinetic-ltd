@@ -30,10 +30,11 @@ from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy
 from platforms.phasepin.src.application.outbox import Outbox as PhaseOutbox, enqueue_pin
 from platforms.photonseal.src.application.meter import seal_from_run, verify_interval
 from platforms.photonseal.src.application.outbox import Outbox as SealOutbox, enqueue_interval
-from platforms.unitcommit.src.application.build_ising import OpfSolution, ZoneSnapshot
+from platforms.unitcommit.src.application.build_ising import ZoneSnapshot
 from platforms.unitcommit.src.application.clearance import build_and_clear
 from platforms.unitcommit.src.application.from_clusters import clusters_from_flex
 from platforms.unitcommit.src.application.outbox import Outbox as UnitOutbox, enqueue_cleared_run
+from platforms.unitcommit.src.application.residual import solve_residual
 
 
 def test_desk_bind_cleared_wrapped_sealed():
@@ -106,7 +107,8 @@ def test_desk_bind_cleared_wrapped_sealed():
         reserve_mw=(0.005,),
         interval_s=900,
     )
-    problem_n = 2
+    assignment = (1, 0)
+    opf = solve_residual(snapshot, assignment)
     pin = pin_time(
         observed_at="2026-09-13T23:00:00Z",
         csac_ok=True,
@@ -127,8 +129,8 @@ def test_desk_bind_cleared_wrapped_sealed():
     run = build_and_clear(
         run_id="run-1",
         snapshot=snapshot,
-        opf=OpfSolution(0.1, problem_n),
-        assignment_count=problem_n,
+        opf=opf,
+        assignment_count=opf.spin_count,
         tolerance_mw=1.0,
         time_source=pin.time_source,
         wrapped=session.wrapped,
