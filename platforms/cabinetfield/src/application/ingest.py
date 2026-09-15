@@ -1,6 +1,6 @@
 """Cabinetfield ingest — a measured row becomes an Observation.
 
-Does not compute a derate. issue_derate.py stays frozen.
+Does not issue a derate. issue_derate.py stays frozen.
 Module Kinetic Ltd.
 """
 from __future__ import annotations
@@ -28,7 +28,7 @@ class MissingField(IngestError):
 
 
 def observation_from_row(row: dict) -> Observation:
-    missing = [name for name in REQUIRED if name not in row or row[name] in (None, "")]
+    missing = [name for name in REQUIRED if row.get(name) in (None, "")]
     if missing:
         raise MissingField(",".join(missing))
     return Observation(
