@@ -36,6 +36,7 @@ from platforms.unitcommit.src.application.from_clusters import clusters_from_fle
 from platforms.unitcommit.src.application.outbox import Outbox as UnitOutbox, enqueue_cleared_run
 from platforms.unitcommit.src.application.qaoa import decode_assignment
 from platforms.unitcommit.src.application.residual import solve_residual
+from platforms.unitcommit.src.application.spsa import optimize
 
 
 def test_desk_bind_cleared_wrapped_sealed():
@@ -111,7 +112,10 @@ def test_desk_bind_cleared_wrapped_sealed():
         interval_s=900,
     )
     problem = build_ising(snapshot)
+    circuit = optimize(problem, p=1, steps=3)
     assignment = decode_assignment(problem)
+    assert circuit.n == problem.n
+    assert circuit.p == 1
     assert len(assignment) == problem.n
     opf = solve_residual(snapshot, assignment)
     dispatched = (0.01 * 0.85) if assignment[0] else 0.0
