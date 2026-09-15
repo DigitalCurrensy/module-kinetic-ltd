@@ -144,11 +144,7 @@ def test_desk_bind_cleared_wrapped_sealed():
     assert pp.time_source == "csac"
 
     session = wrap_from_pin(
-        "span-4",
-        "ks-1",
-        qber_from_tape({"qber": 0.04}),
-        256,
-        quality,
+        "span-4", "ks-1", qber_from_tape({"qber": 0.04}), 256, quality
     )
     assert session.wrapped is True
     fiber_box = FiberOutbox()
