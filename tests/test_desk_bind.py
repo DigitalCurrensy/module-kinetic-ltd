@@ -22,6 +22,7 @@ from platforms.cabinetfield.src.application.derate import Observation, issue_der
 from platforms.cabinetfield.src.application.outbox import Outbox as CabinetOutbox, enqueue_derate
 from platforms.fiberlock.src.application.outbox import Outbox as FiberOutbox, enqueue_wrap
 from platforms.fiberlock.src.application.session import wrap_from_pin
+from platforms.fiberlock.src.application.tape import qber_from_tape
 from platforms.loadclear.src.application.cluster import clusters_from_enrollments
 from platforms.loadclear.src.application.enroll import (
     EnrollStore,
@@ -142,7 +143,13 @@ def test_desk_bind_cleared_wrapped_sealed():
     pp = enqueue_pin(phase_box, pin, tenant_id="t1", event_id="evt-pin")
     assert pp.time_source == "csac"
 
-    session = wrap_from_pin("span-4", "ks-1", 0.04, 256, quality)
+    session = wrap_from_pin(
+        "span-4",
+        "ks-1",
+        qber_from_tape({"qber": 0.04}),
+        256,
+        quality,
+    )
     assert session.wrapped is True
     fiber_box = FiberOutbox()
     wr = enqueue_wrap(fiber_box, session, tenant_id="t1", event_id="evt-wr")
