@@ -32,6 +32,7 @@ from platforms.loadclear.src.application.outbox import Outbox as LoadclearOutbox
 from platforms.phasepin.src.application.clock import pin_time
 from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy
 from platforms.phasepin.src.application.outbox import Outbox as PhaseOutbox, enqueue_pin
+from platforms.phasepin.src.application.tti import tti_from_operator
 from platforms.photonseal.src.application.key import signing_key_from_env
 from platforms.photonseal.src.application.meter import seal_from_run, verify_interval
 from platforms.photonseal.src.application.outbox import Outbox as SealOutbox, enqueue_interval
@@ -135,7 +136,7 @@ def test_desk_bind_cleared_wrapped_sealed():
         holdover_s=0,
         gps_offset_ns=40,
     )
-    quality = attach_inaccuracy(pin, 400)
+    quality = attach_inaccuracy(pin, tti_from_operator(400))
     assert quality.grade == "profile_in_spec"
     phase_box = PhaseOutbox()
     pp = enqueue_pin(phase_box, pin, tenant_id="t1", event_id="evt-pin")
