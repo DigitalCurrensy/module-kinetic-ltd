@@ -1,7 +1,7 @@
-"""Phasepin TTI — operator/switch announced totalTimeInaccuracy.
+"""Phasepin TTI — operator / switch integer, not a TLV parser.
 
-An integer nanosecond bound. Not a C37.238 TLV parser. Not BMCA.
-clock.py and inaccuracy.py stay frozen. Module Kinetic Ltd.
+attach_inaccuracy.py stays frozen. Missing or negative is refused.
+Module Kinetic Ltd.
 """
 from __future__ import annotations
 
@@ -18,9 +18,9 @@ class BadTti(TtiError):
     code = "bad_tti"
 
 
-def tti_from_announced(total_time_inaccuracy_ns) -> int:
+def tti_from_operator(total_time_inaccuracy_ns) -> int:
     if total_time_inaccuracy_ns is None or total_time_inaccuracy_ns == "":
-        raise MissingTti("switch did not announce TTI")
+        raise MissingTti("switch did not announce totalTimeInaccuracy")
     try:
         value = int(total_time_inaccuracy_ns)
     except (TypeError, ValueError) as exc:
