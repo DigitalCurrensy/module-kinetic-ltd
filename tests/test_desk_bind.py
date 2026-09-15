@@ -79,9 +79,10 @@ def test_desk_bind_cleared_wrapped_sealed():
         "cluster-a",
         [enrollment],
         pmax_per_asset_mw=0.02,
-        pmin_per_asset_mw=0.0,
+        pmin_per_asset_mw=0.01,
     )
     assert flex.pmax_mw == 0.02
+    assert flex.pmin_mw == 0.01
 
     obs = Observation(
         "cab-7",
@@ -100,6 +101,7 @@ def test_desk_bind_cleared_wrapped_sealed():
 
     uc_clusters = clusters_from_flex((flex,), (derate,))
     assert uc_clusters[0].pmax_mw == 0.02 * 0.85
+    assert uc_clusters[0].pmin_mw == 0.01 * 0.85
 
     snapshot = ZoneSnapshot(
         clusters=uc_clusters,
@@ -109,6 +111,7 @@ def test_desk_bind_cleared_wrapped_sealed():
     )
     assignment = (1, 0)
     opf = solve_residual(snapshot, assignment)
+    assert opf.residual_mw == abs(0.01 * 0.85 - 0.4 * 0.01)
     pin = pin_time(
         observed_at="2026-09-13T23:00:00Z",
         csac_ok=True,
