@@ -114,7 +114,7 @@ def test_desk_bind_cleared_wrapped_sealed():
     assignment = decode_assignment(problem)
     assert len(assignment) == problem.n
     opf = solve_residual(snapshot, assignment)
-    dispatched = 0.01 * 0.85 if assignment[0] else 0.0
+    dispatched = (0.01 * 0.85) if assignment[0] else 0.0
     assert opf.residual_mw == abs(dispatched - 0.4 * 0.01)
     pin = pin_time(
         observed_at="2026-09-13T23:00:00Z",
