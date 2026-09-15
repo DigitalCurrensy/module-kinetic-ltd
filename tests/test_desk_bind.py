@@ -3,7 +3,10 @@
 Bayline receipt → Loadclear enroll/cluster → Cabinetfield derate
 → Unitcommit build+clear → Phasepin pin → Fiberlock wrap → Photonseal HMAC.
 """
+import os
+
 from desk.drain import DrainStore, drain_outbox
+from desk.pg import drain_live
 from platforms.bayline.src.application.outbox import Outbox as BaylineOutbox, enqueue_work_order
 from platforms.bayline.src.application.receipt import (
     Component,
@@ -189,3 +192,5 @@ def test_desk_bind_cleared_wrapped_sealed():
     for box in (bay_box, load_box, cab_box, phase_box, fiber_box, unit_box, seal_box):
         again += drain_outbox(store, box, observed_at=observed)
     assert again == 0
+    os.environ.pop("DATABASE_URL", None)
+    assert drain_live(store.rows) == 0
