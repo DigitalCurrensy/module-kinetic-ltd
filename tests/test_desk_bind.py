@@ -3,6 +3,7 @@
 Bayline receipt → Loadclear enroll/cluster → Cabinetfield derate
 → Unitcommit build+clear → Phasepin pin → Fiberlock wrap → Photonseal HMAC.
 """
+from desk.drain import DrainStore, drain_outbox
 from platforms.bayline.src.application.outbox import Outbox as BaylineOutbox, enqueue_work_order
 from platforms.bayline.src.application.receipt import (
     Component,
@@ -62,7 +63,8 @@ def test_desk_bind_cleared_wrapped_sealed():
     set_lockout(receipts, "t1", "corr-1")
     receipt = open_work_order(receipts, msg, row, "wo-1")
     assert receipt.work_order_id == "wo-1"
-    wo = enqueue_work_order(BaylineOutbox(), receipt, "evt-wo")
+    bay_box = BaylineOutbox()
+    wo = enqueue_work_order(bay_box, receipt, "evt-wo")
     assert wo.work_order_id == "wo-1"
 
     enrollments = EnrollStore()
@@ -75,7 +77,8 @@ def test_desk_bind_cleared_wrapped_sealed():
         lockout_open=True,
     )
     close_fault(enrollments, "t1", "1")
-    enq = enqueue_enrollment(LoadclearOutbox(), enrollment, "evt-en")
+    load_box = LoadclearOutbox()
+    enq = enqueue_enrollment(load_box, enrollment, "evt-en")
     assert enq.bayline_work_order_id == "wo-1"
     flex = clusters_from_enrollments(
         "cluster-a",
@@ -98,7 +101,8 @@ def test_desk_bind_cleared_wrapped_sealed():
     )
     derate = issue_derate(obs, None)
     assert derate.factor == 0.85
-    dr = enqueue_derate(CabinetOutbox(), derate, tenant_id="t1", event_id="evt-dr")
+    cab_box = CabinetOutbox()
+    dr = enqueue_derate(cab_box, derate, tenant_id="t1", event_id="evt-dr")
     assert dr.factor == 0.85
 
     uc_clusters = clusters_from_flex((flex,), (derate,))
@@ -129,12 +133,14 @@ def test_desk_bind_cleared_wrapped_sealed():
     )
     quality = attach_inaccuracy(pin, 400)
     assert quality.grade == "profile_in_spec"
-    pp = enqueue_pin(PhaseOutbox(), pin, tenant_id="t1", event_id="evt-pin")
+    phase_box = PhaseOutbox()
+    pp = enqueue_pin(phase_box, pin, tenant_id="t1", event_id="evt-pin")
     assert pp.time_source == "csac"
 
     session = wrap_from_pin("span-4", "ks-1", 0.04, 256, quality)
     assert session.wrapped is True
-    wr = enqueue_wrap(FiberOutbox(), session, tenant_id="t1", event_id="evt-wr")
+    fiber_box = FiberOutbox()
+    wr = enqueue_wrap(fiber_box, session, tenant_id="t1", event_id="evt-wr")
     assert wr.span_id == "span-4"
 
     run = build_and_clear(
@@ -147,7 +153,8 @@ def test_desk_bind_cleared_wrapped_sealed():
         wrapped=session.wrapped,
     )
     assert run.status == "cleared"
-    cr = enqueue_cleared_run(UnitOutbox(), run, tenant_id="t1", event_id="evt-uc")
+    unit_box = UnitOutbox()
+    cr = enqueue_cleared_run(unit_box, run, tenant_id="t1", event_id="evt-uc")
     assert cr.run_id == "run-1"
 
     class _SealRun:
@@ -167,5 +174,18 @@ def test_desk_bind_cleared_wrapped_sealed():
     assert interval.kind == "signed_meter"
     assert verify_interval(interval, "k") is True
     assert verify_interval(interval, "") is False
-    sm = enqueue_interval(SealOutbox(), interval, tenant_id="t1", event_id="evt-sm")
+    seal_box = SealOutbox()
+    sm = enqueue_interval(seal_box, interval, tenant_id="t1", event_id="evt-sm")
     assert sm.signature == interval.signature
+
+    store = DrainStore()
+    observed = "2026-09-13T23:00:00Z"
+    written = 0
+    for box in (bay_box, load_box, cab_box, phase_box, fiber_box, unit_box, seal_box):
+        written += drain_outbox(store, box, observed_at=observed)
+    assert written == 7
+    assert len(store.rows) == 7
+    again = 0
+    for box in (bay_box, load_box, cab_box, phase_box, fiber_box, unit_box, seal_box):
+        again += drain_outbox(store, box, observed_at=observed)
+    assert again == 0
