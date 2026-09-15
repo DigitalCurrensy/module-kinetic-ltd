@@ -30,10 +30,11 @@ from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy
 from platforms.phasepin.src.application.outbox import Outbox as PhaseOutbox, enqueue_pin
 from platforms.photonseal.src.application.meter import seal_from_run, verify_interval
 from platforms.photonseal.src.application.outbox import Outbox as SealOutbox, enqueue_interval
-from platforms.unitcommit.src.application.build_ising import ZoneSnapshot
+from platforms.unitcommit.src.application.build_ising import ZoneSnapshot, build_ising
 from platforms.unitcommit.src.application.clearance import build_and_clear
 from platforms.unitcommit.src.application.from_clusters import clusters_from_flex
 from platforms.unitcommit.src.application.outbox import Outbox as UnitOutbox, enqueue_cleared_run
+from platforms.unitcommit.src.application.qaoa import decode_assignment
 from platforms.unitcommit.src.application.residual import solve_residual
 
 
@@ -109,9 +110,12 @@ def test_desk_bind_cleared_wrapped_sealed():
         reserve_mw=(0.005,),
         interval_s=900,
     )
-    assignment = (1, 0)
+    problem = build_ising(snapshot)
+    assignment = decode_assignment(problem)
+    assert len(assignment) == problem.n
     opf = solve_residual(snapshot, assignment)
-    assert opf.residual_mw == abs(0.01 * 0.85 - 0.4 * 0.01)
+    dispatched = 0.01 * 0.85 if assignment[0] else 0.0
+    assert opf.residual_mw == abs(dispatched - 0.4 * 0.01)
     pin = pin_time(
         observed_at="2026-09-13T23:00:00Z",
         csac_ok=True,
