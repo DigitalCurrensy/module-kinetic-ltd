@@ -32,6 +32,7 @@ from platforms.loadclear.src.application.outbox import Outbox as LoadclearOutbox
 from platforms.phasepin.src.application.clock import pin_time
 from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy
 from platforms.phasepin.src.application.outbox import Outbox as PhaseOutbox, enqueue_pin
+from platforms.photonseal.src.application.key import signing_key_from_env
 from platforms.photonseal.src.application.meter import seal_from_run, verify_interval
 from platforms.photonseal.src.application.outbox import Outbox as SealOutbox, enqueue_interval
 from platforms.unitcommit.src.application.build_ising import Cluster, ZoneSnapshot, build_ising
@@ -166,16 +167,18 @@ def test_desk_bind_cleared_wrapped_sealed():
         time_source = run.time_source
         grade = quality.grade
 
+    key = signing_key_from_env({"PHOTONSEAL_KEY": "cabinet-secret"})
     interval = seal_from_run(
         run=_SealRun(),
         meter_id="m-1",
         interval_start="2026-09-13T23:00:00Z",
         interval_s=900,
         watt_hours=12.5,
-        signing_key="k",
+        signing_key=key,
     )
     assert interval.kind == "signed_meter"
-    assert verify_interval(interval, "k") is True
+    assert verify_interval(interval, key) is True
+    assert verify_interval(interval, "k") is False
     assert verify_interval(interval, "") is False
     seal_box = SealOutbox()
     sm = enqueue_interval(seal_box, interval, tenant_id="t1", event_id="evt-sm")
