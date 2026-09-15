@@ -3,7 +3,7 @@
 Loop rule: rewrite this file when a parent SHA lands. Code is law. Docs lag is dirt.
 
 - Company: Module Kinetic Ltd
-- Parent: DigitalCurrensy/module-kinetic-ltd main `010a3234`
+- Parent: DigitalCurrensy/module-kinetic-ltd main (hygiene after persist-closed)
 - Retired slug: omni-renewal-engine (redirect only; do not build there)
 - Brand: Deep Slate #121316, Grid Amber #FFB000, Phosphor Green #00FF66, Off-White #F4F4F6
 - Slogan (not the company name): THE GRID IS BROKEN. WE ARE THE RENEWAL ENGINE.
@@ -15,3 +15,4 @@ Loop rule: rewrite this file when a parent SHA lands. Code is law. Docs lag is d
 - Build sequence: Bayline receipt → Loadclear enroll/refuse/cluster → Unitcommit clearance → Cabinetfield derate → Phasepin + Fiberlock → Photonseal HMAC.
 - Product 6 is Unitcommit (not Unitspin).
 - Shared: tenant_id UUID, event_id UUIDv7, outbox, no DROP/TRUNCATE. HMAC stays the tag. No Ed25519.
+- Desk skill: artifacts/.grok/skills/module-kinetic-ops + docs/LEARNED.md + AGENTS.md.
