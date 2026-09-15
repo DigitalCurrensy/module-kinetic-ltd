@@ -113,9 +113,9 @@ def test_desk_bind_cleared_wrapped_sealed():
     )
     problem = build_ising(snapshot)
     circuit = optimize(problem, p=1, steps=3)
-    assignment = decode_assignment(problem)
     assert circuit.n == problem.n
     assert circuit.p == 1
+    assignment = decode_assignment(problem)
     assert len(assignment) == problem.n
     opf = solve_residual(snapshot, assignment)
     dispatched = (0.01 * 0.85) if assignment[0] else 0.0
