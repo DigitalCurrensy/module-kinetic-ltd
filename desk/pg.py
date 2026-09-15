@@ -2,6 +2,8 @@
 
 Unset URL → no connection, 0 writes. Set URL → CREATE IF NOT EXISTS
 + INSERT ON CONFLICT DO NOTHING. Never DROP / TRUNCATE.
+Timescale hypertable / policies are best-effort: failure rolls back
+that statement only so vanilla Postgres and Neon still accept rows.
 Reuses desk.drain SQL. Module Kinetic Ltd.
 """
 from __future__ import annotations
@@ -59,18 +61,20 @@ def connect(url: str | None = None):
 def bootstrap(conn) -> None:
     cur = conn.cursor()
     cur.execute(_guard(SQL_CREATE))
+    conn.commit()
     try:
+        cur = conn.cursor()
         cur.execute(_guard(SQL_HYPERTABLE))
+        conn.commit()
     except Exception:
         conn.rollback()
-        cur = conn.cursor()
-        cur.execute(_guard(SQL_CREATE))
     try:
+        cur = conn.cursor()
         cur.execute(_guard(SQL_COMPRESS))
         cur.execute(_guard(SQL_RETAIN))
+        conn.commit()
     except Exception:
-        pass
-    conn.commit()
+        conn.rollback()
 
 
 def insert_row(conn, row: DrainRow) -> int:

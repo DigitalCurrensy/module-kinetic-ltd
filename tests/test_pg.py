@@ -24,6 +24,8 @@ class _Cursor:
         text = sql.upper()
         if "DROP " in text or "TRUNCATE" in text:
             raise AssertionError("forbidden sql reached the wire")
+        if "CREATE_HYPERTABLE" in text or "ADD_COMPRESSION_POLICY" in text or "ADD_RETENTION_POLICY" in text:
+            raise RuntimeError("timescale missing")
         if "INSERT" in text:
             key = (params[0], params[1])
             if key in self._conn.seen:
@@ -40,6 +42,7 @@ class _Conn:
     def __init__(self) -> None:
         self.seen: set[tuple] = set()
         self.rows: list = []
+        self.rollbacks = 0
 
     def cursor(self) -> _Cursor:
         return _Cursor(self)
@@ -48,7 +51,7 @@ class _Conn:
         pass
 
     def rollback(self) -> None:
-        pass
+        self.rollbacks += 1
 
     def close(self) -> None:
         pass
@@ -89,6 +92,7 @@ def test_dsn_path_writes_seven_then_zero():
         assert drain_live(rows) == 7
         assert drain_live(rows) == 0
         assert len(conn.rows) == 7
+        assert conn.rollbacks >= 2
     finally:
         pg.connect = original
         os.environ.pop("DATABASE_URL", None)
