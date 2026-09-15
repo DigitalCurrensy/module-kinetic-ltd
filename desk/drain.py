@@ -14,13 +14,25 @@ Kind = Literal[
     "enrollment",
     "derate",
     "pin",
+    "time_pin",
     "wrap",
     "cleared_run",
+    "commitment_run",
     "signed_meter",
 ]
 
 ALLOWED_KINDS = frozenset(
-    {"work_order", "enrollment", "derate", "pin", "wrap", "cleared_run", "signed_meter"}
+    {
+        "work_order",
+        "enrollment",
+        "derate",
+        "pin",
+        "time_pin",
+        "wrap",
+        "cleared_run",
+        "commitment_run",
+        "signed_meter",
+    }
 )
 FORBIDDEN_SQL = ("DROP TABLE", "TRUNCATE", "DROP HYPERABLE")
 
@@ -34,7 +46,8 @@ CREATE TABLE IF NOT EXISTS desk_outbox (
     signature   TEXT,
     PRIMARY KEY (tenant_id, event_id),
     CONSTRAINT desk_outbox_kind CHECK (kind IN (
-        'work_order','enrollment','derate','pin','wrap','cleared_run','signed_meter'
+        'work_order','enrollment','derate','pin','time_pin','wrap',
+        'cleared_run','commitment_run','signed_meter'
     ))
 );
 """
@@ -128,6 +141,9 @@ def _payload_of(row) -> dict[str, Any]:
         "watt_hours",
         "spin_count",
         "residual_mw",
+        "run_id",
+        "span_id",
+        "bayline_work_order_id",
     ):
         if hasattr(row, name):
             payload[name] = getattr(row, name)
