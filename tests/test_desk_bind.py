@@ -89,11 +89,11 @@ def test_desk_bind_cleared_wrapped_sealed():
     flex = clusters_from_enrollments(
         "cluster-a",
         [enrollment],
-        pmax_per_asset_mw=0.02,
-        pmin_per_asset_mw=0.01,
+        pmax_per_asset_mw=2.0,
+        pmin_per_asset_mw=1.0,
     )
-    assert flex.pmax_mw == 0.02
-    assert flex.pmin_mw == 0.01
+    assert flex.pmax_mw == 2.0
+    assert flex.pmin_mw == 1.0
 
     obs = Observation(
         "cab-7",
@@ -112,13 +112,13 @@ def test_desk_bind_cleared_wrapped_sealed():
     assert dr.factor == 0.85
 
     uc_clusters = clusters_from_flex((flex,), (derate,))
-    assert uc_clusters[0].pmax_mw == 0.02 * 0.85
-    assert uc_clusters[0].pmin_mw == 0.01 * 0.85
+    assert uc_clusters[0].pmax_mw == 2.0 * 0.85
+    assert uc_clusters[0].pmin_mw == 1.0 * 0.85
 
     snapshot = ZoneSnapshot(
         clusters=uc_clusters,
-        demand_mw=(0.01,),
-        reserve_mw=(0.005,),
+        demand_mw=(1.0,),
+        reserve_mw=(0.2,),
         interval_s=900,
     )
     problem = build_ising(snapshot)
@@ -128,7 +128,7 @@ def test_desk_bind_cleared_wrapped_sealed():
     assignment = decode_assignment(problem)
     assert len(assignment) == problem.n
     opf = solve_residual(snapshot, assignment)
-    dispatched = (0.01 * 0.85) if assignment[0] else 0.0
+    dispatched = (1.0 * 0.85) if assignment[0] else 0.0
     assert opf.residual_mw == abs(dispatched - snapshot.alpha * snapshot.demand_mw[0])
     pin = pin_time(
         observed_at="2026-09-13T23:00:00Z",
