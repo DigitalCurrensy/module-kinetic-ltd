@@ -1,21 +1,22 @@
-"""Bayline CSMS ingest — one NotifyEvent POST, live receipt law.
+"""Bayline CSMS ingest — one NotifyEvent body becomes a work order.
 
-Stdlib only. No FastAPI. receipt.py stays frozen.
-NotifyPeriodicEventStream is still not a work order.
-Module Kinetic Ltd.
+No FastAPI. No socket. The CSMS posts a dict; this module maps it onto
+live ingest → set_lockout → open_work_order → enqueue_work_order.
+receipt.py stays frozen. Module Kinetic Ltd.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
-from platforms.bayline.src.application.outbox import Outbox, enqueue_work_order
+from platforms.bayline.src.application.outbox import Outbox, OutboxRow, enqueue_work_order
 from platforms.bayline.src.application.receipt import (
     Component,
     IncomingMessage,
+    NotADiagnosis,
     NotifyEventRow,
-    ReceiptStore,
+    Receipt,
     ReceiptError,
+    ReceiptStore,
     Variable,
     ingest,
     open_work_order,
@@ -23,92 +24,76 @@ from platforms.bayline.src.application.receipt import (
 )
 
 
-class HttpIngestError(Exception):
-    code = "http_ingest_error"
-    http_status = 400
-
-    def __init__(self, message: str, *, code: str | None = None, http_status: int | None = None) -> None:
-        super().__init__(message)
-        if code:
-            self.code = code
-        if http_status is not None:
-            self.http_status = http_status
+class BadEnvelope(ReceiptError):
+    code = "bad_envelope"
 
 
 @dataclass(frozen=True)
 class IngestResult:
-    http_status: int
-    work_order_id: str | None
-    diagnoses: int
-    event_id: str
-    code: str = "accepted"
+    receipt: Receipt
+    diagnosed: int
+    outbox_row: OutboxRow | None
 
 
-def _row_from_event(raw: dict[str, Any]) -> NotifyEventRow:
-    component = raw.get("component") or {}
+def _require(envelope: dict, key: str) -> str:
+    value = envelope.get(key)
+    if not value:
+        raise BadEnvelope(f"CSMS envelope missing {key}")
+    return str(value)
+
+
+def _row_from_event_data(item: dict) -> NotifyEventRow:
+    component = item.get("component") or {}
     evse = component.get("evse") or {}
-    variable = raw.get("variable") or {}
+    variable = item.get("variable") or {}
     return NotifyEventRow(
-        event_id=int(raw["eventId"]),
-        timestamp=str(raw["timestamp"]),
-        trigger=raw["trigger"],
-        actual_value=str(raw.get("actualValue", "")),
+        event_id=int(item.get("eventId") or item.get("event_id") or 0),
+        timestamp=str(item.get("timestamp") or ""),
+        trigger=item.get("trigger") or "Alerting",
+        actual_value=str(item.get("actualValue") or item.get("actual_value") or ""),
         component=Component(
-            name=str(component.get("name", "EVSE")),
+            name=str(component.get("name") or "EVSE"),
             evse_id=evse.get("id"),
             connector_id=component.get("connectorId"),
         ),
-        variable=Variable(name=str(variable.get("name", ""))),
-        tech_code=raw.get("techCode"),
-        tech_info=raw.get("techInfo"),
-        cleared=bool(raw.get("cleared", False)),
-        severity=raw.get("actualSeverity"),
+        variable=Variable(name=str(variable.get("name") or "AvailabilityState")),
+        tech_code=item.get("techCode"),
+        tech_info=item.get("techInfo"),
+        cleared=bool(item.get("cleared", False)),
     )
 
 
-def message_from_body(body: dict[str, Any]) -> IncomingMessage:
-    if not isinstance(body, dict):
-        raise HttpIngestError("body must be an object", http_status=400)
-    required = ("tenant_id", "station_id", "correlation_id", "protocol", "action")
-    missing = [k for k in required if not body.get(k)]
-    if missing:
-        raise HttpIngestError(f"missing {missing[0]}", http_status=400)
-    rows = tuple(_row_from_event(item) for item in body.get("eventData") or ())
+def message_from_envelope(envelope: dict) -> IncomingMessage:
+    payload = envelope.get("payload") or {}
+    raw_rows = payload.get("eventData") or payload.get("event_data") or envelope.get("eventData") or ()
+    rows = tuple(_row_from_event_data(item) for item in raw_rows)
     return IncomingMessage(
-        tenant_id=str(body["tenant_id"]),
-        station_id=str(body["station_id"]),
-        correlation_id=str(body["correlation_id"]),
-        protocol=body["protocol"],
-        action=body["action"],
+        tenant_id=_require(envelope, "tenant_id"),
+        station_id=_require(envelope, "station_id"),
+        correlation_id=_require(envelope, "correlation_id"),
+        protocol=envelope.get("protocol") or "ocpp2.1",
+        action=envelope.get("action") or "NotifyEvent",
         rows=rows,
-        stream_id=body.get("stream_id"),
+        stream_id=payload.get("streamId") or envelope.get("stream_id"),
     )
 
 
-def accept_notify_event(
+def handle_notify_event(
     store: ReceiptStore,
-    outbox: Outbox,
-    body: dict[str, Any],
+    envelope: dict,
     *,
-    work_order_id: str,
-    event_id: str,
+    outbox: Outbox | None = None,
 ) -> IngestResult:
-    """POST /ocpp/NotifyEvent → ingest → lockout → work order → outbox."""
-    message = message_from_body(body)
-    try:
-        diagnosed = ingest(store, message)
-    except ReceiptError as exc:
-        status = 409 if getattr(exc, "code", "") == "duplicate" else 422
-        raise HttpIngestError(str(exc), code=exc.code, http_status=status) from exc
+    """POST NotifyEvent → diagnosed rows → LOTO → work order → optional outbox."""
+    message = message_from_envelope(envelope)
+    diagnosed = ingest(store, message)
     if not diagnosed:
-        raise HttpIngestError("no diagnosis row in NotifyEvent", code="not_a_diagnosis", http_status=422)
+        raise NotADiagnosis("NotifyEvent carried no diagnosis row")
     set_lockout(store, message.tenant_id, message.correlation_id)
+    work_order_id = _require(envelope, "work_order_id")
     receipt = open_work_order(store, message, diagnosed[0], work_order_id)
-    enqueue_work_order(outbox, receipt, event_id)
-    return IngestResult(
-        http_status=202,
-        work_order_id=receipt.work_order_id,
-        diagnoses=len(diagnosed),
-        event_id=event_id,
-        code="accepted",
-    )
+    row = None
+    if outbox is not None:
+        event_id = str(envelope.get("event_id") or message.correlation_id)
+        row = enqueue_work_order(outbox, receipt, event_id)
+    return IngestResult(receipt=receipt, diagnosed=len(diagnosed), outbox_row=row)
