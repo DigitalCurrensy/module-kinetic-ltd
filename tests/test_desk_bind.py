@@ -34,10 +34,10 @@ from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy
 from platforms.phasepin.src.application.outbox import Outbox as PhaseOutbox, enqueue_pin
 from platforms.photonseal.src.application.meter import seal_from_run, verify_interval
 from platforms.photonseal.src.application.outbox import Outbox as SealOutbox, enqueue_interval
-from platforms.unitcommit.src.application.build_ising import ZoneSnapshot, build_ising
+from platforms.unitcommit.src.application.build_ising import Cluster, ZoneSnapshot, build_ising
 from platforms.unitcommit.src.application.clearance import build_and_clear
 from platforms.unitcommit.src.application.from_clusters import clusters_from_flex
-from platforms.unitcommit.src.application.outbox import Outbox as UnitOutbox, enqueue_cleared_run
+from platforms.unitcommit.src.application.outbox import Outbox as UnitOutbox, UnclearedRun, enqueue_cleared_run
 from platforms.unitcommit.src.application.qaoa import decode_assignment
 from platforms.unitcommit.src.application.residual import solve_residual
 from platforms.unitcommit.src.application.spsa import optimize
@@ -194,3 +194,30 @@ def test_desk_bind_cleared_wrapped_sealed():
     assert again == 0
     os.environ.pop("DATABASE_URL", None)
     assert drain_live(store.rows) == 0
+
+
+def test_tight_tolerance_refuses_and_blocks_outbox():
+    snapshot = ZoneSnapshot(
+        clusters=(Cluster("a", pmin_mw=0.0085, pmax_mw=0.017, c_nl=1.0, c_su=2.0),),
+        demand_mw=(0.01,),
+        reserve_mw=(0.005,),
+        interval_s=900,
+    )
+    assignment = decode_assignment(build_ising(snapshot))
+    opf = solve_residual(snapshot, assignment)
+    assert opf.residual_mw > 0.0
+    run = build_and_clear(
+        run_id="run-refuse",
+        snapshot=snapshot,
+        opf=opf,
+        assignment_count=opf.spin_count,
+        tolerance_mw=0.0,
+        time_source="csac",
+        wrapped=True,
+    )
+    assert run.status == "refused"
+    try:
+        enqueue_cleared_run(UnitOutbox(), run, tenant_id="t1", event_id="evt-refuse")
+        assert False
+    except UnclearedRun:
+        pass
