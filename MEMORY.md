@@ -15,10 +15,11 @@ Loop rule: rewrite this file when a parent SHA lands. Code is law. Docs lag is d
   - DigitalCurrensy/phasepin `835eb61f` (tti.py ee6960b9 + test_tti.py a393cf1d MATCH)
   - DigitalCurrensy/fiberlock `fe911896` (tape.py c5d80817 + test_tape.py 63be1a67 MATCH)
   - DigitalCurrensy/photonseal `d15f23a8` (key.py 7f79a74c + test_key.py e5c3ff59 MATCH)
-- Persist wave CLOSED. Desk bind drains seven outboxes; second pass writes 0; drain_live writes 0 without DATABASE_URL.
+- Persist wave CLOSED. Desk bind drains seven outboxes; second pass writes 0.
+- DSN drain CLOSED on parent: tests/test_pg.py FakeConn writes 7 then 0. desk/pg.py bootstrap commits CREATE first; missing Timescale hypertable/policies rollback so vanilla Postgres/Neon INSERT can land. drain_live still writes 0 without DATABASE_URL.
 - W0–W6 CLOSED on the desk: snapshot.alpha, pg hook, refuse path, Observation ingest, PHOTONSEAL_KEY, operator TTI, tape QBER.
-- Bind uses signing_key_from_env, tti_from_operator(400), qber_from_tape({"qber": 0.04}).
-- Drain ALLOWED_KINDS includes time_pin + commitment_run. No DROP/TRUNCATE. Retain 400d, compress 7d.
+- Bind uses signing_key_from_env, tti_from_operator(400), qber_from_tape({"qber": 0.04}). Site-scale happy path Pmin=1.0 Pmax=2.0 D=1.0 still clears; test_site_scale refuses r>1 MW.
+- Drain ALLOWED_KINDS includes time_pin + commitment_run. No DROP/TRUNCATE. Retain 400d, compress 7d (best-effort).
 - Parent `platforms/{house}` is source of truth. Houses do not merge. No empty shells.
 - Next house only if named. Not Wellpath unless named.
 - Build sequence: Bayline receipt → Loadclear enroll/refuse/cluster → Cabinetfield derate → Unitcommit clearance → Phasepin + Fiberlock → Photonseal HMAC.
