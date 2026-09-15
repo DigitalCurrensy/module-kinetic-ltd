@@ -1,8 +1,11 @@
-"""Fiberlock QBER tape — a measured row becomes a qber float.
+"""Fiberlock QBER tape — a measured row, not a constant.
 
-session.py wrap law stays frozen. Module Kinetic Ltd.
+session.py stays frozen. Missing or QBER ≥ 0.11 is refused here too.
+Module Kinetic Ltd.
 """
 from __future__ import annotations
+
+from platforms.fiberlock.src.application.session import QBER_MAX
 
 
 class TapeError(Exception):
@@ -18,13 +21,14 @@ class BadQber(TapeError):
 
 
 def qber_from_tape(row: dict) -> float:
-    raw = row.get("qber", row.get("qber_rolling"))
-    if raw is None or raw == "":
-        raise MissingQber("tape row missing qber")
+    if row is None or row.get("qber") in (None, ""):
+        raise MissingQber("span tape has no qber")
     try:
-        value = float(raw)
+        qber = float(row["qber"])
     except (TypeError, ValueError) as exc:
-        raise BadQber("qber must be a float") from exc
-    if value < 0.0:
+        raise BadQber("qber must be a number") from exc
+    if qber < 0.0:
         raise BadQber("qber cannot be negative")
-    return value
+    if qber >= QBER_MAX:
+        raise BadQber(f"qber {qber} exceeds {QBER_MAX}")
+    return qber
