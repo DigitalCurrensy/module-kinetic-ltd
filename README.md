@@ -14,14 +14,20 @@ Prior slug `omni-renewal-engine` is retired as a company name. Product house nam
 
 **Yes — each house gets its own private repo. Not yet for the unsplit houses.**
 
+Parent `platforms/{slug}` is source of truth. Child refresh copies new files only. Houses do not merge. Persist wave on the seven locked-sequence houses is CLOSED.
+
 | Layer | Repo | SHA |
 |-------|------|-----|
 | Company desk | `DigitalCurrensy/module-kinetic-ltd` | parent |
-| Bayline | `DigitalCurrensy/bayline` | `2aa5c59` |
-| Loadclear | `DigitalCurrensy/loadclear` | `8a6dcf1` |
-| Unitcommit | `DigitalCurrensy/unitcommit` | `d0ea81c` (8/8) |
+| Bayline | `DigitalCurrensy/bayline` | `e853163` |
+| Loadclear | `DigitalCurrensy/loadclear` | `906b053` |
+| Unitcommit | `DigitalCurrensy/unitcommit` | `39a90797` |
+| Cabinetfield | `DigitalCurrensy/cabinetfield` | `749ecfd` |
+| Phasepin | `DigitalCurrensy/phasepin` | `540fc525` |
+| Fiberlock | `DigitalCurrensy/fiberlock` | `407f8d7` |
+| Photonseal | `DigitalCurrensy/photonseal` | `05ec3c75` |
 
-Copy `platforms/{slug}/` one-to-one into the child after a compiling first slice AND an explicit split call. Do not delete this parent. Do not merge houses. Do not stand up fourteen empty shells. Next child when called: Cabinetfield.
+Copy `platforms/{slug}/` one-to-one into the child after a compiling first slice AND an explicit split or refresh call. Do not delete this parent. Do not merge houses. Do not stand up fourteen empty shells. Next child only when named.
 
 ## Houses
 
@@ -29,18 +35,18 @@ Copy `platforms/{slug}/` one-to-one into the child after a compiling first slice
 |---|-------|------|-------------|
 | 1 | Bayline | `bayline` | scan → lockout → work order on OCPP 2.1 |
 | 2 | Loadclear | `loadclear` | enroll that EVSE + refuse path |
-| 3 | Wellpath | `wellpath` | survey → path (separate house) |
-| 4 | Tenderbank | `tenderbank` | consist SOC (separate house) |
-| 5 | Ionlattice | `ionlattice` | VQE job (separate house) |
+| 3 | Wellpath | `wellpath` | survey → path (separate house, not started) |
+| 4 | Tenderbank | `tenderbank` | consist SOC (separate house, not started) |
+| 5 | Ionlattice | `ionlattice` | VQE job (separate house, not started) |
 | 6 | Unitcommit | `unitcommit` | clustered Ising + OPF clearance gate |
 | 7 | Cabinetfield | `cabinetfield` | ODMR → derate; no critical without calibration |
 | 8 | Fiberlock | `fiberlock` | CV-QKD wrap |
-| 9 | Coilhold | `coilhold` | MHD surrogate (separate house) |
+| 9 | Coilhold | `coilhold` | MHD surrogate (separate house, not started) |
 | 10 | Phasepin | `phasepin` | CSAC + PTP stamp |
-| 11 | Nitroforge | `nitroforge` | catalyst bench (separate house) |
+| 11 | Nitroforge | `nitroforge` | catalyst bench (separate house, not started) |
 | 12 | Photonseal | `photonseal` | signed meter interval |
-| 13 | Phononstack | `phononstack` | heat layout (separate house) |
-| 14 | Densitywell | `densitywell` | gravimetry fusion (separate house) |
+| 13 | Phononstack | `phononstack` | heat layout (separate house, not started) |
+| 14 | Densitywell | `densitywell` | gravimetry fusion (separate house, not started) |
 
 ## Build sequence (do not skip)
 
@@ -56,7 +62,7 @@ Copy `platforms/{slug}/` one-to-one into the child after a compiling first slice
 
 - `tenant_id` on every operational row
 - ingest idempotent on `event_id` UUIDv7
-- outbox for money, parts, firmware, derates, settlement
+- outbox for money, parts, firmware, derates, pins, wraps, signed meters
 - edge owns inference; cloud owns identity, parts, registry, settlement
 - no `DROP` / `TRUNCATE` in migrations
 - brand: `#121316` `#FFB000` `#00FF66` `#F4F4F6`
