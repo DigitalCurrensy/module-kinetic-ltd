@@ -42,7 +42,7 @@ GitHub will not open the operator screen. This repository is the checks.
 
 ```bash
 python -m pip install pytest
-PYTHONPATH=. python -m pytest tests
+PYTHONPATH=. python -m pytest
 ```
 
 Do not put a database password or a signing key in the repository. If no database is set, a live save writes nothing.
