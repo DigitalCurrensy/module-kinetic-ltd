@@ -50,7 +50,7 @@ ON CONFLICT (tenant_id, event_id) DO NOTHING;
 SQL_RETENTION = """
 SELECT add_compression_policy('desk_outbox', INTERVAL '7 days');
 SELECT add_retention_policy('desk_outbox', INTERVAL '400 days');
--- drop_chunks expires old chunks. Never DROP TABLE desk_outbox.
+-- Old chunks expire. The desk_outbox table stays.
 """
 
 
@@ -108,11 +108,14 @@ def drain_outbox_row(store: DrainStore, row, *, observed_at: str) -> DrainRow:
     kind = getattr(row, "kind", None)
     if kind not in KINDS:
         raise UnknownKind(str(kind))
-    payload = {
-        k: getattr(row, k)
-        for k in vars(row)
-        if k not in {"tenant_id", "event_id", "kind"} and k not in FORBIDDEN_KEYS
-    }
+    payload = {}
+    for name in dir(row):
+        if name.startswith("_") or name in {"tenant_id", "event_id", "kind"} or name in FORBIDDEN_KEYS:
+            continue
+        value = getattr(row, name)
+        if callable(value):
+            continue
+        payload[name] = value
     return store.append(
         DrainRow(
             tenant_id=row.tenant_id,

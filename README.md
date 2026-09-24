@@ -22,6 +22,17 @@ A charge-point operator or a grid operator who must show why a charger was clear
 
 A repeated station and event id is one work order. Later checks are not written after a refusal.
 
+## How to check
+
+This repository is the law. It is not the operator screen. GitHub will not start that screen.
+
+```bash
+python -m pip install pytest
+PYTHONPATH=. python -m pytest tests
+```
+
+With no `DATABASE_URL`, a live drain writes nothing. Do not put a database password or a signing key in the repo.
+
 ## Repos
 
 The parent `platforms/{slug}` is the source. Each live house has its own repo. A child is copied only after that house compiles, and only when a split is named. Do not merge the houses.
