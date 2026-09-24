@@ -1,15 +1,12 @@
 # MEMORY — Module Kinetic Ltd
 
-Loop rule: rewrite this file when a parent SHA lands. Code is law. Docs lag is dirt.
-Updated 2026-09-24. No kernel edits. derate.py bab6281 unchanged.
+Updated 2026-09-24. No kernel edits. Houses do not merge. No Wellpath.
 
-- Company: Module Kinetic Ltd
-- Parent: DigitalCurrensy/module-kinetic-ltd main (this commit)
-- Operator desk: all seven houses. Run plant writes work_order, enrollment, derate, commitment_run, time_pin, wrap, signed_meter.
-- Refuse critical (no calibration) writes the receipt and enrollment only. Refuse residual writes through derate and no commitment_run.
-- gps_peer, QBER >= 0.11, and an empty Photonseal key write 0. Empty key on verify returns false. Key is not stored.
-- pmax_committed = 2.0 * f. Clear iff residual <= 1 MW and spin count matches and derated pmax >= pmin.
-- No Timescale DSN pasted. Not a CSMS. Not an HSM. Not a live ODMR ADC, switch TTI, or span modem.
-- Houses do not merge. No Wellpath.
-- Frozen kernels: receipt 49eea447, enroll 078c26c9, refuse 04a48547, build_ising 55a20615, derate bab6281, clock 14522007, session 3db938d3, meter dfb7cced.
-- Completion: operator path of the seven houses is closed. Real iron and a sellable clearance are not. Parked seven stay at 0%.
+- Operator desk runs all seven houses.
+- Measured cabinet row, switch TTI integer, and span QBER tape are file feeds. Not a diamond sim, TLV parser, or modem.
+- PHOTONSEAL_KEY comes from the environment. Empty or literal k refuses. Key is not an outbox field. Empty verify returns false.
+- One CSMS POST: NotifyEvent 2.1 opens a work order. OCPP 1.6 and NotifyPeriodicEventStream return 422 and write 0. Not a CSMS product. No station certs.
+- No Timescale DSN pasted. PGLite holds the rows. Unset URL on the parent drain still writes 0.
+- Child CI and GitHub About stay a human paste. Enroll SHA drift stays. Parent is the gate.
+- Frozen: receipt 49eea447, enroll 078c26c9, refuse 04a48547, build_ising 55a20615, derate bab6281, clock 14522007, session 3db938d3, meter dfb7cced.
+- Not 100% of a sellable clearance. The named operator waves are closed.
