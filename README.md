@@ -1,6 +1,6 @@
 # Module Kinetic Ltd
 
-When a charger breaks, this software signs off on it, or it refuses it.
+A broken charger is signed off, or it is refused.
 
 If the checks pass, it saves one signed record. If a check fails, it saves nothing and says why.
 

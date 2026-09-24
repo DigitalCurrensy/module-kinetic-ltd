@@ -21,14 +21,17 @@ def test_optimize_keeps_width_and_depth():
     assert circuit.mixer == "x"
 
 
-def test_step_moves_angles():
+def test_step_stays_at_the_pull_and_moves_away_from_it():
     problem = _problem()
     start = from_ising(problem, p=1)
     g0 = (start.layers[0].gamma,)
     b0 = (start.layers[0].beta,)
-    landed = step(problem, g0, b0, a=0.05, c=0.05, seed=3)
-    assert landed.loss == surrogate_loss(problem, landed.gammas, landed.betas)
-    assert landed.gammas != g0 or landed.betas != b0
+    parked = step(problem, g0, b0, a=0.05, c=0.05, seed=3)
+    assert parked.loss == surrogate_loss(problem, parked.gammas, parked.betas)
+    assert parked.gammas == g0
+    assert parked.betas == b0
+    moved = step(problem, (0.9,), (0.1,), a=0.05, c=0.05, seed=3)
+    assert moved.gammas != (0.9,)
 
 
 def test_bad_depth_refused():

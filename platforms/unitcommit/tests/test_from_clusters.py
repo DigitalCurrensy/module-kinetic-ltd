@@ -14,7 +14,7 @@ def test_flex_becomes_shrunk_cluster():
     )
     clusters = clusters_from_flex([flex], [_D("site-s1", 0.70)])
     assert len(clusters) == 1
-    assert clusters[0].pmax_mw == 0.028
+    assert abs(clusters[0].pmax_mw - 0.028) < 1e-9
     assert clusters[0].initial_on == 1
 
 
