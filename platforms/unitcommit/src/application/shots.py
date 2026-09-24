@@ -1,9 +1,4 @@
-"""Unitcommit shot backend — exact amplitudes for n <= MAX_N.
-
-Not Qiskit. Not IBM. Cost layers: RZ(2γ h) and RZZ(2γ J). Mixer: RX(2β).
-Expectation is ⟨H_C⟩. Majority bitstring is the sample. qaoa.py stays frozen.
-Module Kinetic Ltd.
-"""
+"""A small exact sample of the on and off plan. Not an account on a quantum computer."""
 from __future__ import annotations
 
 from cmath import exp

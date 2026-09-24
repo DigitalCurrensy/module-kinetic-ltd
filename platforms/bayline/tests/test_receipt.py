@@ -1,4 +1,4 @@
-"""Bayline receipt tests against the live parent API."""
+"""A real fault is kept. An old message, a cleared fault, and a repeat are refused."""
 from platforms.bayline.src.application.receipt import (
     Component,
     IncomingMessage,

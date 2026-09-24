@@ -1,3 +1,4 @@
+"""The signature is saved once. The key is not in the row."""
 from platforms.photonseal.src.application.meter import seal_interval
 from platforms.photonseal.src.application.outbox import (
     DuplicateOutboxEvent,

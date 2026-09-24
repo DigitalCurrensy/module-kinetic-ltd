@@ -1,3 +1,4 @@
+"""The mismatch number can fail."""
 from platforms.unitcommit.src.application.build_ising import Cluster, ZoneSnapshot, build_ising
 from platforms.unitcommit.src.application.residual import AssignmentWidth, solve_residual
 

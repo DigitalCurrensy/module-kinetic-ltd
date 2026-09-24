@@ -1,7 +1,6 @@
-"""Photonseal key handle — the tag key never defaults to k.
+"""The signing key is a host secret.
 
-meter.py stays frozen. Empty or missing env is MissingKey.
-The key never enters an outbox payload. Module Kinetic Ltd.
+Empty is refused. The test value k is refused. The key is not saved in the record.
 """
 from __future__ import annotations
 

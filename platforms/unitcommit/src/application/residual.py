@@ -1,8 +1,4 @@
-"""Unitcommit OPF residual slave — a real number for require_cleared.
-
-P-mismatch from ac_opf (one-island AC injection). Not ADMM. Not QAOA.
-build_ising.py stays frozen. Module Kinetic Ltd.
-"""
+"""The power mismatch is a number. Too large, and the check is refused."""
 from __future__ import annotations
 
 from platforms.unitcommit.src.application.ac_opf import Branch, p_mismatch_mw

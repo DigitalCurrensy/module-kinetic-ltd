@@ -1,3 +1,4 @@
+"""The error rate must be a reading under 0.11."""
 from platforms.fiberlock.src.application.session import wrap_from_pin
 from platforms.fiberlock.src.application.tape import BadQber, MissingQber, qber_from_tape
 from platforms.phasepin.src.application.clock import pin_time

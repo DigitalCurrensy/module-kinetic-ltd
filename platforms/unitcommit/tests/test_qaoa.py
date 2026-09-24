@@ -1,3 +1,4 @@
+"""The plan description matches the width of the problem."""
 from platforms.unitcommit.src.application.build_ising import Cluster, ZoneSnapshot, build_ising
 from platforms.unitcommit.src.application.qaoa import (
     DepthRefused,

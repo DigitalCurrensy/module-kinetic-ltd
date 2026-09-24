@@ -1,3 +1,4 @@
+"""A mismatch is refused."""
 from platforms.unitcommit.src.application.apply_derate import apply_derates, from_flexible
 from platforms.unitcommit.src.application.build_ising import Cluster, OpfSolution, ZoneSnapshot
 from platforms.unitcommit.src.application.clearance import build_and_clear

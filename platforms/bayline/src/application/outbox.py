@@ -1,7 +1,6 @@
-"""Bayline work-order outbox — persist the receipt, do not mutate it.
+"""The repair job is saved once.
 
-Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-In-memory first; Timescale later. Module Kinetic Ltd.
+The same event is not saved again. A missing fault is not a row. The row is not deleted.
 """
 from __future__ import annotations
 

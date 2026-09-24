@@ -1,9 +1,6 @@
-"""Unitcommit Ising builder — clustered binaries only.
+"""The on and off plan is built from groups, not from one charger per switch.
 
-Module Kinetic Ltd.
-Convention: u in {0,1}, sigma = 2u - 1, x = u = (sigma + 1) / 2.
-Continuous p,q,V stay in ADMM / AC-OPF. normalize='per_unit' is required
-so reserve squares do not swamp C_nl.
+On is 1. Off is 0. The power mismatch is checked separately.
 """
 
 from __future__ import annotations

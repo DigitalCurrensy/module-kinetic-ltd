@@ -1,3 +1,4 @@
+"""A posted fault becomes a repair job. A bad message is refused."""
 from platforms.bayline.src.application.http import BadEnvelope, handle_notify_event
 from platforms.bayline.src.application.outbox import Outbox
 from platforms.bayline.src.application.receipt import (

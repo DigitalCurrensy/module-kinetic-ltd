@@ -1,8 +1,4 @@
-"""Photonseal outbox — persist a signed meter interval, do not mutate it.
-
-Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-The signing key is never stored. Module Kinetic Ltd.
-"""
+"""The signature is saved once. The key is not saved."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

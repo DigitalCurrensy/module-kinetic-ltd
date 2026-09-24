@@ -1,7 +1,6 @@
-"""Phasepin TTI — operator / switch integer, not a TLV parser.
+"""The clock error must be a whole number of nanoseconds.
 
-inaccuracy.py grades the number. Missing or negative is refused.
-Module Kinetic Ltd.
+inaccuracy.py grades that number. A missing or negative number is refused.
 """
 from __future__ import annotations
 

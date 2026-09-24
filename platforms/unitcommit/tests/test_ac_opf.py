@@ -1,3 +1,4 @@
+"""The power mismatch is a number."""
 from platforms.unitcommit.src.application.ac_opf import Branch, p_mismatch_mw
 from platforms.unitcommit.src.application.build_ising import Cluster, ZoneSnapshot, build_ising
 from platforms.unitcommit.src.application.residual import solve_residual

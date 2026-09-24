@@ -1,3 +1,4 @@
+"""The cabinet factor shrinks the group before the power check."""
 from platforms.unitcommit.src.application.from_clusters import clusters_from_flex
 from platforms.loadclear.src.application.cluster import FlexibleCluster
 

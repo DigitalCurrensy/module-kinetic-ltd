@@ -1,3 +1,4 @@
+"""A GPS-only clock or a noisy line is refused."""
 from platforms.fiberlock.src.application.session import WrapRefused, wrap_control_path, wrap_from_pin
 
 

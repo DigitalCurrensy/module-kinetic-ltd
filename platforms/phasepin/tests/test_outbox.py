@@ -1,3 +1,4 @@
+"""A good clock is saved. A GPS-only clock is not."""
 from platforms.phasepin.src.application.clock import pin_time
 from platforms.phasepin.src.application.outbox import (
     DuplicateOutboxEvent,

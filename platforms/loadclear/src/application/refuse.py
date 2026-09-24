@@ -1,8 +1,6 @@
-"""Loadclear refuse path — gateway may reject a dispatch.
+"""Turning the charger on while it is locked is refused.
 
-Module Kinetic Ltd. Cloud publishes a need. The site box answers physics.
-A Bayline-open EVSE enrolls as an asset but cannot ARM until the work order closes
-and no Cabinetfield warning remains.
+A charger that is too hot, too empty, over its export limit, or past its cycle budget is also refused.
 """
 
 from __future__ import annotations

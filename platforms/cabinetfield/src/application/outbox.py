@@ -1,7 +1,6 @@
-"""Cabinetfield derate outbox — persist an issued derate, do not mutate it.
+"""The cabinet result is saved once.
 
-Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-A missing derate is not a row. Module Kinetic Ltd.
+A missing result is not a row. The same event is not saved again.
 """
 from __future__ import annotations
 

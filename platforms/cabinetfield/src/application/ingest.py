@@ -1,7 +1,6 @@
-"""Cabinetfield ingest — a measured row becomes an Observation.
+"""A measurement row becomes an observation.
 
-Does not issue a derate. derate.py issues the derate.
-Module Kinetic Ltd.
+This file does not decide the factor. derate.py does that.
 """
 from __future__ import annotations
 

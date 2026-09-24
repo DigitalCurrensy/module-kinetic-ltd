@@ -1,4 +1,4 @@
-"""Unitcommit builder tests against the live parent API."""
+"""The on and off plan is built from groups."""
 from platforms.unitcommit.src.application.build_ising import (
     ClearanceError,
     Cluster,

@@ -1,3 +1,4 @@
+"""A missing clock error is not a pass. One millisecond is too wide."""
 from platforms.phasepin.src.application.clock import pin_time
 from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy, grade_inaccuracy
 

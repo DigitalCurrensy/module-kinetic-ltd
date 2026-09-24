@@ -1,7 +1,7 @@
-"""Cabinetfield derate — NV-center ODMR on the same iron Unitcommit commits.
+"""Was the cabinet measured?
 
-critical is illegal without a calibration_run covering observed_at.
-Module Kinetic Ltd.
+A serious fault with no calibration for that cabinet and that time is refused.
+The result is a factor from 0 to 1. That factor shrinks the power the next check may use.
 """
 from __future__ import annotations
 

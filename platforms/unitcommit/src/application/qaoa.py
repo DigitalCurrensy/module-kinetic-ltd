@@ -1,8 +1,6 @@
-"""Unitcommit QAOA client — circuit spec from live H_C, not a backend.
+"""A description of the on and off plan.
 
-Layers e^{-iγ H_C} e^{-iβ H_M} with H_M = Σ X. Decode is sign(-h) padded
-to n so require_cleared can see spin_count. No SPSA. No Qiskit.
-build_ising.py stays frozen. Module Kinetic Ltd.
+This file does not call a quantum computer. The plan width must match.
 """
 from __future__ import annotations
 

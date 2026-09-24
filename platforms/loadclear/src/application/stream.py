@@ -1,8 +1,6 @@
-"""Loadclear stream attach — NotifyPeriodicEventStream is telemetry, not a receipt.
+"""A stream of updates is not a fault.
 
-Maps a CSMS stream body onto live attach_stream, then refuse/evaluate.
-Bayline NotifyEvent stays on Bayline. enroll.py stays frozen.
-Module Kinetic Ltd.
+It updates a charger that already has a repair job. The fault check stays in Bayline.
 """
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Loadclear enrollment + refuse tests."""
+"""No repair job, no enrollment. The lock blocks turn-on."""
 from platforms.loadclear.src.application.enroll import (
     EnrollStore,
     MissingReceipt,

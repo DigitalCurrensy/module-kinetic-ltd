@@ -1,4 +1,8 @@
-"""Phasepin — CSAC + PTP pin time. GPS is a peer sensor, never source of truth."""
+"""Is the clock good enough?
+
+A local atomic clock wins, then network time, then a holdover under four hours.
+GPS alone is not good enough.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass

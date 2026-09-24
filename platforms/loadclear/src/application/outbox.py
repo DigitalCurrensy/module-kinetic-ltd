@@ -1,7 +1,6 @@
-"""Loadclear enrollment outbox — persist the enroll, do not mutate it.
+"""The enrollment is saved once.
 
-Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-In-memory first; Timescale later. Module Kinetic Ltd.
+The same event is not saved again. A missing enrollment is not a row.
 """
 from __future__ import annotations
 

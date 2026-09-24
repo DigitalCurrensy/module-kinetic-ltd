@@ -1,3 +1,4 @@
+"""The repair job is saved once."""
 from platforms.bayline.src.application.outbox import (
     DuplicateOutboxEvent,
     MissingReceipt,

@@ -1,3 +1,4 @@
+"""A quiet line can wrap. A noisy line cannot."""
 from platforms.fiberlock.src.application.qber import Sample, Tape, can_wrap, record
 from platforms.fiberlock.src.application.session import WrapRefused
 

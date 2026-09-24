@@ -1,3 +1,4 @@
+"""A local atomic clock wins. GPS alone does not."""
 from platforms.phasepin.src.application.clock import pin_time
 
 

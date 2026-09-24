@@ -1,3 +1,4 @@
+"""A clean line is saved once."""
 from platforms.fiberlock.src.application.outbox import (
     DuplicateOutboxEvent,
     Outbox,

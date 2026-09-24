@@ -1,33 +1,18 @@
-# Bayline — OCPP 2.1 event streams
+# Bayline — the fault message
 
-## Two planes
+Was this a real charger fault?
 
-| Plane | Message | RPC | Use |
-|-------|---------|-----|-----|
-| Diagnosis / availability | NotifyEvent | CALL, empty {} result | Receipts, Faulted, Alerting |
-| High-rate telemetry | NotifyPeriodicEventStream | SEND (type 6), no result | Loadclear watts / Hz |
+The charger talks to its management system. That system posts the fault here. Bayline does not open a connection to the charger.
 
-OCPP 1.6 StatusNotification is telemetry on a dead protocol. It is not a Bayline receipt.
+| What arrived | What Bayline does |
+| --- | --- |
+| An alert that is still open | Keeps it and can open a repair job |
+| A change to faulted that is still open | Keeps it |
+| A fault that is already cleared | Drops it |
+| A status update | Drops it |
+| A stream of updates | Refuses it. That stream is not a fault |
+| The old one-word status | Refuses it |
 
-## NotifyEvent (N07 / N08 / availability)
+The repair job cannot be opened before the charger is locked. The same fault twice stays one record.
 
-Envelope: generatedAt, seqNo, tbc, eventData[].
-Each eventData row: eventId, timestamp, trigger in {Alerting, Delta, Periodic}, actualValue, component, variable, plus techCode, techInfo, cleared, severity, variableMonitoringId, eventNotificationType.
-
-- trigger=Alerting → start a receipt (threshold / fault).
-- trigger=Delta and variable=AvailabilityState and actualValue=Faulted → start a receipt.
-- trigger=Delta AvailabilityState in {Available, Occupied, Reserved, Unavailable} → site state only, no work order.
-- trigger=Periodic on NotifyEvent → slow monitor, not a receipt unless severity demands it.
-
-## Periodic event streams (N11–N15)
-
-1. SetVariableMonitoring with periodicEventStream {interval, values}.
-2. CS OpenPeriodicEventStream {id, variableMonitoringId, params}.
-3. CSMS stores constant metadata (component, variable, severity).
-4. CS NotifyPeriodicEventStream SEND {id, basetime, pending, data[{t,v}]}.
-5. Reconstruct timestamp = basetime + t, actualValue = v, attach stored metadata.
-6. AdjustPeriodicEventStream if pending climbs. ClosePeriodicEventStream when the monitor dies.
-
-SEND does not consume the single outstanding CALL slot. That is why streams exist.
-
-Bayline receipt.py must refuse to open a work order from a stream sample.
+The update stream is how the management system sends repeated readings without waiting for a reply. Bayline must not turn one of those readings into a repair job.

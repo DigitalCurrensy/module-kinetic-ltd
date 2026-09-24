@@ -1,8 +1,4 @@
-"""Unitcommit run outbox — persist a cleared run, do not mutate it.
-
-Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-A refused run is not an outbox row. Module Kinetic Ltd.
-"""
+"""A passed power check is saved once. A mismatch is not a row."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

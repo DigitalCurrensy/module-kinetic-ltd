@@ -1,8 +1,6 @@
-"""Unitcommit AC-OPF stub — P-mismatch, not a Newton stack.
+"""Do the power numbers add up?
 
-One electrical island: Re(V I*) collapses to Σ u Pmin − α D.
-Optional lossless DC branch adds a thermal leftover.
-build_ising.py stays frozen. Module Kinetic Ltd.
+This is the mismatch on one site. It is not a full power-flow solver.
 """
 from __future__ import annotations
 

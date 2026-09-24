@@ -1,3 +1,4 @@
+"""A passed record is signed. A failed check is not."""
 from platforms.photonseal.src.application.meter import (
     SealRefused,
     seal_from_run,

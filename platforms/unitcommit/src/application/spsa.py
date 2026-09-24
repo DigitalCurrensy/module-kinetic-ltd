@@ -1,7 +1,6 @@
-"""Unitcommit SPSA — two-point Bernoulli on QAOA (γ,β).
+"""A small adjustment of the plan settings.
 
-Loss is cost(decode) plus a quadratic pull on the angles. Not a shot
-backend. Not Qiskit. qaoa.py stays frozen. Module Kinetic Ltd.
+At the center it stays put. Away from the center it moves. Not a quantum computer account.
 """
 from __future__ import annotations
 

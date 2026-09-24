@@ -1,3 +1,4 @@
+"""A small sample of the plan stays the same width."""
 from platforms.unitcommit.src.application.build_ising import Cluster, ZoneSnapshot, build_ising
 from platforms.unitcommit.src.application.qaoa import from_ising
 from platforms.unitcommit.src.application.shots import (

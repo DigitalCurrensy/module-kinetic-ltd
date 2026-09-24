@@ -1,7 +1,6 @@
-"""Loadclear clusters — enrolled assets become one Unitcommit cluster.
+"""Chargers that passed are grouped. A locked charger adds no power.
 
-Blocked EVSEs stay on the roster and do not contribute pmax.
-Module Kinetic Ltd. House boundary: duck-typed handoff, no Unitcommit import.
+The group is handed on as plain values. This file does not check the power numbers.
 """
 from __future__ import annotations
 

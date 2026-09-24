@@ -1,8 +1,4 @@
-"""Fiberlock wrap outbox — persist a wrapped session, do not mutate it.
-
-Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-An unwrapped path is not an outbox row. Module Kinetic Ltd.
-"""
+"""A clean line is saved once. A noisy line is not a row."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

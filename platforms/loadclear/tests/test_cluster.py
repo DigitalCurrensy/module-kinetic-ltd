@@ -1,3 +1,4 @@
+"""A locked charger adds no power to the group."""
 from platforms.loadclear.src.application.cluster import clusters_from_enrollments
 from platforms.loadclear.src.application.enroll import EnrollStore, close_fault, enroll_from_bayline
 

@@ -1,8 +1,7 @@
-"""Bayline CSMS ingest — one NotifyEvent body becomes a work order.
+"""Was this a real charger fault?
 
-No FastAPI. No socket. The CSMS posts a dict; this module maps it onto
-live ingest → set_lockout → open_work_order → enqueue_work_order.
-receipt.py stays frozen. Module Kinetic Ltd.
+One posted fault becomes a repair job. There is no charger socket in this file.
+The charger-management system posts the fault. This file locks the charger, then opens the job.
 """
 from __future__ import annotations
 

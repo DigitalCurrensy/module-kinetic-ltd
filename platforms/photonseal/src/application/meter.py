@@ -1,9 +1,8 @@
-"""Photonseal — attested interval as a signed meter, not a token.
+"""Is the record signed?
 
-Duck-typed bind: cleared AND wrapped AND sealable clock.
-HMAC-SHA256 over meter_id|start|interval|Wh|time_source.
-Empty signing_key is refused on seal. Verify never raises for a bad key.
-No Unitcommit / Phasepin import.
+The signature covers the meter, the start, the length, the energy, and the clock.
+No key, no signature. A check with an empty or wrong key returns false.
+A failed power check, a missing line wrap, a clock that is too wide, or GPS alone is not signed.
 """
 from __future__ import annotations
 

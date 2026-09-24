@@ -1,3 +1,4 @@
+"""The adjustment stays at the center and moves when it starts away from it."""
 from platforms.unitcommit.src.application.build_ising import Cluster, ZoneSnapshot, build_ising
 from platforms.unitcommit.src.application.qaoa import DepthRefused, from_ising
 from platforms.unitcommit.src.application.spsa import optimize, step, surrogate_loss

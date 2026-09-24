@@ -1,4 +1,4 @@
-"""Apply Cabinetfield factors onto Unitcommit clusters before build_ising."""
+"""The cabinet factor shrinks the allowed power before the numbers are checked."""
 from __future__ import annotations
 
 from platforms.unitcommit.src.application.build_ising import Cluster

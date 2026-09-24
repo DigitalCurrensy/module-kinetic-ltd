@@ -1,3 +1,4 @@
+"""The cabinet result is saved once."""
 from platforms.cabinetfield.src.application.derate import Observation, issue_derate
 from platforms.cabinetfield.src.application.outbox import (
     DuplicateOutboxEvent,

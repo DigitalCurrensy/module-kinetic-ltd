@@ -1,3 +1,4 @@
+"""A passed power check is saved once. A mismatch is not a row."""
 from platforms.unitcommit.src.application.outbox import (
     DuplicateOutboxEvent,
     Outbox,

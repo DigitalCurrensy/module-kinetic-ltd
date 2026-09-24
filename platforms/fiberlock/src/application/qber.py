@@ -1,8 +1,6 @@
-"""Fiberlock QBER tape — monitor the channel, not the plant.
+"""Is the line clean enough?
 
-Live wrap gate uses QBER_MAX=0.11 (DV-QKD / Shor-Preskill abort).
-CV-QKD in the field is usually scored as excess noise ξ in shot-noise
-units, abort near ξ ≈ 0.05–0.10 SNU, not 11% bit flips.
+Eleven percent or more of the checks failing is refused. This watches the line, not the charger.
 """
 from __future__ import annotations
 

@@ -1,3 +1,4 @@
+"""An update stream is not a fault."""
 from platforms.loadclear.src.application.enroll import (
     EnrollStore,
     MissingReceipt,

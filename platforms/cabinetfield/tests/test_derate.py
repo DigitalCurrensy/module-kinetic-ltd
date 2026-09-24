@@ -1,3 +1,4 @@
+"""A serious fault with no calibration is refused."""
 from platforms.cabinetfield.src.application.derate import (
     CalibrationRequired,
     CalibrationRun,

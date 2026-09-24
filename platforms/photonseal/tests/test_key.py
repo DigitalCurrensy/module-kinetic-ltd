@@ -1,3 +1,4 @@
+"""An empty key and the test key k are refused."""
 from platforms.photonseal.src.application.key import MissingKey, signing_key_from_env
 from platforms.photonseal.src.application.meter import seal_interval, verify_interval
 

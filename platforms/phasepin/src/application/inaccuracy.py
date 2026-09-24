@@ -1,7 +1,6 @@
-"""Phasepin — grade a fabric-announced totalTimeInaccuracy.
+"""The clock error is the number the switch already announced.
 
-The number is supplied by the operator / switch. This module does not
-parse IEEE_C37_238 TLV bytes or run BMCA.
+This file does not read the switch's private message. One millisecond or more is too wide.
 """
 from __future__ import annotations
 

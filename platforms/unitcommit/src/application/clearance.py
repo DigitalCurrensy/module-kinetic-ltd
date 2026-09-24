@@ -1,7 +1,6 @@
-"""Unitcommit clearance — a bitstring is not a dispatch.
+"""A mismatch is refused.
 
-Refuse cleared unless OPF residual and spin count match.
-Module Kinetic Ltd.
+A plan of on and off is not a dispatch. The count of that plan must match.
 """
 from __future__ import annotations
 

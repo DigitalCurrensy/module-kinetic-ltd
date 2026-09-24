@@ -1,4 +1,7 @@
-"""Loadclear enrollment — Bayline EVSE becomes an asset, not a dispatch."""
+"""Is this charger allowed back on?
+
+No repair job, no enrollment. A second enrollment of the same charger reopens the lock.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

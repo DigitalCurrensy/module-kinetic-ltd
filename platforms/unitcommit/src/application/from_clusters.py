@@ -1,7 +1,4 @@
-"""Unitcommit intake — duck-typed Loadclear clusters, then Cabinetfield shrink.
-
-Module Kinetic Ltd. No Loadclear import. Houses do not merge.
-"""
+"""The charger group comes in as plain values. The cabinet factor is applied first."""
 from __future__ import annotations
 
 from platforms.unitcommit.src.application.apply_derate import apply_derates, from_flexible

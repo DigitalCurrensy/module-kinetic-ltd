@@ -1,7 +1,6 @@
-"""Fiberlock QBER tape — a measured row, not a constant.
+"""The error rate comes from a reading, not from a fixed number.
 
-session.py stays frozen. Missing or QBER ≥ 0.11 is refused here too.
-Module Kinetic Ltd.
+Missing, or 0.11 or higher, is refused.
 """
 from __future__ import annotations
 

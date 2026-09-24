@@ -1,8 +1,8 @@
-"""Bayline first receipt — OCPP 2.1 NotifyEvent only.
+"""Was this a real charger fault?
 
-Module Kinetic Ltd. Diagnosis plane: NotifyEvent CALL.
-Telemetry plane: NotifyPeriodicEventStream SEND — never a work order.
-OCPP 1.6 StatusNotification is rejected as a receipt source.
+An alert is kept. A change to faulted that is still open is kept.
+A cleared fault, a status update, the old protocol, and an update stream are refused.
+The repair job cannot be opened before the lock.
 """
 
 from __future__ import annotations

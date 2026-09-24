@@ -1,8 +1,4 @@
-"""Phasepin outbox — persist a pin, do not mutate it.
-
-Append-only. Idempotent on event_id. No DROP / TRUNCATE.
-A gps_peer pin is not an outbox row. Module Kinetic Ltd.
-"""
+"""A good clock is saved once. A GPS-only clock is not a row."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

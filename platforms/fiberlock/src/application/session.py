@@ -1,7 +1,6 @@
-"""Fiberlock — CV-QKD wrap on spans that carry Unitcommit setpoints.
+"""The line is wrapped only when it is clean and the clock is good enough.
 
-Not a plant sensor. Operator object is a key session and a QBER tape.
-Duck-typed pin: TimePin or PinQuality. No Phasepin import.
+GPS alone is refused. A clock that is too wide is refused. A key shorter than 128 bits is refused.
 """
 from __future__ import annotations
 

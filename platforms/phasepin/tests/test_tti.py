@@ -1,3 +1,4 @@
+"""The clock error must be a whole number."""
 from platforms.phasepin.src.application.clock import pin_time
 from platforms.phasepin.src.application.inaccuracy import attach_inaccuracy
 from platforms.phasepin.src.application.tti import BadTti, MissingTti, tti_from_operator

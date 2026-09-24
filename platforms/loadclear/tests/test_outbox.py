@@ -1,3 +1,4 @@
+"""The enrollment is saved once."""
 from platforms.loadclear.src.application.enroll import EnrollStore, enroll_from_bayline
 from platforms.loadclear.src.application.outbox import (
     DuplicateOutboxEvent,

@@ -1,3 +1,4 @@
+"""A measurement row becomes an observation, then a factor."""
 from platforms.cabinetfield.src.application.derate import issue_derate
 from platforms.cabinetfield.src.application.ingest import MissingField, observation_from_row
 
