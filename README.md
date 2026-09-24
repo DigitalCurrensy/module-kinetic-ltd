@@ -1,68 +1,45 @@
 # Module Kinetic Ltd
 
-**MODULE KINETIC LTD**
+A charger fault becomes a signed energy interval, or it is refused.
 
-**THE GRID IS BROKEN. WE ARE THE RENEWAL ENGINE.**
+Apache-2.0. One desk. Seven checks. Houses do not merge.
 
-Private company monorepo for fourteen industrial energy houses. Hardware-software tight coupling. Edge-native diagnosis and dispatch. No carbon-accounting SaaS.
+## Who it is for
 
-Owner: `DigitalCurrensy` · Classification: Confidential
-Canonical slug: `DigitalCurrensy/module-kinetic-ltd`
-Prior slug `omni-renewal-engine` is retired as a company name. Product house names did not change.
+A charge-point operator or a grid operator who must show why a charger was cleared. Not a carbon spreadsheet. Not a token.
 
-## Repo policy (clear)
+## The seven checks
 
-**Yes — each house gets its own private repo. Not yet for the unsplit houses.**
+| Check | What it does | What it refuses |
+| --- | --- | --- |
+| Bayline | Turns an OCPP 2.0.1 or 2.1 fault into a work order | OCPP 1.6, or a periodic stream used as a fault |
+| Loadclear | Turns that charger into an asset | No work order, or arming while the lock is open |
+| Cabinetfield | Applies a derate from a cabinet reading | A critical fault with no covering calibration |
+| Unitcommit | Clears power only if the mismatch and the spin count both pass | A power mismatch |
+| Phasepin | Grades the clock | A GPS-only clock, or a bound that is too wide |
+| Fiberlock | Wraps the path when the span is quiet enough | A span error rate at or above 0.11, or a key shorter than 128 bits |
+| Photonseal | Signs the interval | An empty key, or the literal key `k` |
 
-Parent `platforms/{slug}` is source of truth. Child refresh copies new files only. Houses do not merge. Persist wave on the seven locked-sequence houses is CLOSED.
+A repeated station and event id is one work order. Later checks are not written after a refusal.
 
-| Layer | Repo | SHA |
-|-------|------|-----|
-| Company desk | `DigitalCurrensy/module-kinetic-ltd` | parent |
-| Bayline | `DigitalCurrensy/bayline` | `e853163` |
-| Loadclear | `DigitalCurrensy/loadclear` | `906b053` |
-| Unitcommit | `DigitalCurrensy/unitcommit` | `39a90797` |
-| Cabinetfield | `DigitalCurrensy/cabinetfield` | `749ecfd` |
-| Phasepin | `DigitalCurrensy/phasepin` | `540fc525` |
-| Fiberlock | `DigitalCurrensy/fiberlock` | `407f8d7` |
-| Photonseal | `DigitalCurrensy/photonseal` | `05ec3c75` |
+## Repos
 
-Copy `platforms/{slug}/` one-to-one into the child after a compiling first slice AND an explicit split or refresh call. Do not delete this parent. Do not merge houses. Do not stand up fourteen empty shells. Next child only when named.
+The parent `platforms/{slug}` is the source. Each live house has its own repo. A child is copied only after that house compiles, and only when a split is named. Do not merge the houses.
 
-## Houses
+| House | Repo |
+| --- | --- |
+| Bayline | `DigitalCurrensy/bayline` |
+| Loadclear | `DigitalCurrensy/loadclear` |
+| Cabinetfield | `DigitalCurrensy/cabinetfield` |
+| Unitcommit | `DigitalCurrensy/unitcommit` |
+| Phasepin | `DigitalCurrensy/phasepin` |
+| Fiberlock | `DigitalCurrensy/fiberlock` |
+| Photonseal | `DigitalCurrensy/photonseal` |
 
-| # | House | Slug | First slice |
-|---|-------|------|-------------|
-| 1 | Bayline | `bayline` | scan → lockout → work order on OCPP 2.1 |
-| 2 | Loadclear | `loadclear` | enroll that EVSE + refuse path |
-| 3 | Wellpath | `wellpath` | survey → path (separate house, not started) |
-| 4 | Tenderbank | `tenderbank` | consist SOC (separate house, not started) |
-| 5 | Ionlattice | `ionlattice` | VQE job (separate house, not started) |
-| 6 | Unitcommit | `unitcommit` | clustered Ising + OPF clearance gate |
-| 7 | Cabinetfield | `cabinetfield` | ODMR → derate; no critical without calibration |
-| 8 | Fiberlock | `fiberlock` | CV-QKD wrap |
-| 9 | Coilhold | `coilhold` | MHD surrogate (separate house, not started) |
-| 10 | Phasepin | `phasepin` | CSAC + PTP stamp |
-| 11 | Nitroforge | `nitroforge` | catalyst bench (separate house, not started) |
-| 12 | Photonseal | `photonseal` | signed meter interval |
-| 13 | Phononstack | `phononstack` | heat layout (separate house, not started) |
-| 14 | Densitywell | `densitywell` | gravimetry fusion (separate house, not started) |
+Wellpath, Tenderbank, Ionlattice, Coilhold, Nitroforge, Phononstack, and Densitywell are not started. They are not unfinished percent of this desk.
 
-## Build sequence (do not skip)
+## License and selling
 
-1. Bayline first receipt on OCPP 2.1 `NotifyEvent` — not 1.6 polling.
-2. Enroll that EVSE into Loadclear with a refuse path.
-3. Feed Loadclear clusters into Unitcommit. Refuse `cleared` unless OPF residual and spin count match.
-4. Cabinetfield derates on the same iron. Refuse `critical` without a calibration row.
-5. Phasepin timestamps. Fiberlock wraps control paths where fiber exists.
-6. Photonseal settles attested intervals as signed meters, not tokens.
-7. Wellpath, Densitywell, Ionlattice, Nitroforge, Phononstack, Tenderbank, Coilhold stay separate houses.
+Copyright 2026 Module Kinetic Ltd. Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
 
-## Shared contracts
-
-- `tenant_id` on every operational row
-- ingest idempotent on `event_id` UUIDv7
-- outbox for money, parts, firmware, derates, pins, wraps, signed meters
-- edge owns inference; cloud owns identity, parts, registry, settlement
-- no `DROP` / `TRUNCATE` in migrations
-- brand: `#121316` `#FFB000` `#00FF66` `#F4F4F6`
+Apache-2.0 lets anyone use, change, and sell copies of this code, including in a commercial product. That grant is permanent for the versions published under it. The copyright holder can still sell a hosted service, a support contract, or a separate license for code that was never published here. The name Module Kinetic is not granted as a trademark.
