@@ -51,6 +51,6 @@ Wellpath, Tenderbank, Ionlattice, Coilhold, Nitroforge, Phononstack, and Density
 
 ## License and selling
 
-Copyright 2026 Module Kinetic Ltd. Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
+Copyright 2026 DIGITAL CURRENSY INC / Module Kinetic Ltd. Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
 
 Apache-2.0 lets anyone use, change, and sell copies of this code, including in a commercial product. That grant is permanent for the versions published under it. The copyright holder can still sell a hosted service, a support contract, or a separate license for code that was never published here. The name Module Kinetic is not granted as a trademark.
