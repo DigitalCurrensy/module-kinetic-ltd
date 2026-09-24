@@ -1,6 +1,6 @@
 """Cabinetfield ingest — a measured row becomes an Observation.
 
-Does not issue a derate. issue_derate.py stays frozen.
+Does not issue a derate. derate.py issues the derate.
 Module Kinetic Ltd.
 """
 from __future__ import annotations

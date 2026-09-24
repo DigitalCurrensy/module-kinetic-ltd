@@ -1,6 +1,6 @@
 """Phasepin TTI — operator / switch integer, not a TLV parser.
 
-attach_inaccuracy.py stays frozen. Missing or negative is refused.
+inaccuracy.py grades the number. Missing or negative is refused.
 Module Kinetic Ltd.
 """
 from __future__ import annotations

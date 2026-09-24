@@ -1,7 +1,7 @@
-# Module Kinetic Ltd — company desk
+# Module Kinetic Ltd
 
-One desk. Fourteen houses. The houses do not merge.
+Copyright 2026 DIGITAL CURRENSY INC / Module Kinetic Ltd.
 
-Prior working title "OMNI Renewal Engine" is retired. The legal and product-house brand is Module Kinetic Ltd. The line "THE GRID IS BROKEN. WE ARE THE RENEWAL ENGINE." remains the slogan, not the company name.
+One desk. Seven houses. The houses do not merge.
 
-Object store prefix: `r2://module-kinetic/{tenant}/{house}/...`
+A charger fault becomes a signed energy interval, or it is refused. The other seven names are not started.
