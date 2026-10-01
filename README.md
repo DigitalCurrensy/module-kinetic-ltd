@@ -1,20 +1,20 @@
 # Module Kinetic Ltd
 
-A broken charger is signed off, or it is refused.
+An electric-vehicle charging station reported a fault. Before the company that runs it writes "cleared," seven questions have to pass. One no, and nothing is saved.
 
-If the checks pass, it saves one signed record. If a check fails, it saves nothing and says why.
+The station is the pedestal or wall box a car plugs into at a lot, a depot, or a public site. It is not a phone charger, and it is not the cord in a home garage.
 
 Copyright 2026 DIGITAL CURRENSY INC / Module Kinetic Ltd. Apache-2.0.
 
 ## Who it is for
 
-People who run chargers, and people on the power grid who have to explain why a charger was allowed back on.
+The company that operates those stations, and the utility that has to take their power. Not the driver.
 
 ## What you do
 
-1. A fault comes in from the charger.
+1. A fault comes in from the station.
 2. Seven checks run, in order.
-3. You get a signed record, or a refusal.
+3. You get one record for that period, or a refusal that says which question failed.
 
 Sending the same fault twice does not create a second record.
 
